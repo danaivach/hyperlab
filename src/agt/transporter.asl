@@ -13,3 +13,4 @@
 +!move(X) : true
 	<- .print("Time to move product ", X).  
 
+{ include("$jacamoJar/templates/common-cartago.asl") }
