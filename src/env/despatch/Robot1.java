@@ -1,4 +1,3 @@
-
 package despatch;
 
 import java.util.*;
@@ -24,6 +23,7 @@ public class Robot1 extends Artifact {
 	@OPERATION
 	void release(){
 		signal("released");
+
 	}
 }
 
