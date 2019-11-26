@@ -1,8 +1,0 @@
-manual robot2 {
-	usageprot deliverBC {
-		:function deliver
-		:body{
-			.print("Robot 2 rules")
-		}
-	}
-}
