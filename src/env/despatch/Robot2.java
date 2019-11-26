@@ -1,11 +1,15 @@
 package despatch;
 
-import java.util.*;
 import cartago.*;
 
-public class Robot1 extends Artifact {
+public class Robot2 extends Artifact {
 	void init(Object coordinates) {
 		defineObsProperty("location", coordinates);
+	}
+
+	@OPERATION
+	void initialize(String mode){
+		signal("initialized", mode);
 	}
 
 	@OPERATION
@@ -23,7 +27,6 @@ public class Robot1 extends Artifact {
 	@OPERATION
 	void release(){
 		signal("released");
-
 	}
-}
 
+}
