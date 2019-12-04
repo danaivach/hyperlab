@@ -14,6 +14,7 @@
 
 mas playground2.0 {
 
+    agent node_manager: node_manager.asl
     agent manager: manager.asl
     agent transporter1: transporter.asl {
 	focus: despatch.r1
