@@ -1,0 +1,3 @@
+[submodule "wot-td-parser"]
+	path = wot-td-parser
+	url = https://github.com/Interactions-HSG/wot-td-parser
