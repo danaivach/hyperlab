@@ -55,18 +55,7 @@ public class ThingArtifact extends Artifact {
     } catch (IllegalArgumentException | IOException e) {
       e.printStackTrace();
     }
-		if (notification.getMessage().contains("waterConsumption")) {
-				signal("water_event", thing.getName().get());
-	} else if (notification.getMessage().contains("energyConsumption")) {
-				signal("energy_event", thing.getName().get());
-	} else if (notification.getMessage().contains("OutsideWeatherArtifact")) {
-			signal("weather_event", thing.getName().get());
-	} else if (notification.getMessage().contains("MusicPlayer")) {
-		signal("music_event", thing.getName().get());
-	}
-	else {
-		signal("event", thing.getName().get());
-	}
+    log("updated thing description of " + notification.getEntityIRI());
   }
   
   @OPERATION
