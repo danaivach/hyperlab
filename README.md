@@ -3,7 +3,7 @@ A demo scenario for the Web Conference 2020, showcasing a dynamic WoT environmen
 
 ## Run it
 To run the system, the following steps are necessary:
-* set up a hypermedia environment using [Yggdrasil](https://github.com/Interactions-HSG/yggdrasil/) on feature/hypermas_mt branch on port 8080 (default)
+* set up a hypermedia environment using [Yggdrasil](https://github.com/Interactions-HSG/yggdrasil/) on feature/hypermas_mt branch on port 8080 (default) and the requests from our [Postman collection](https://www.getpostman.com/collections/f6a89ddd4f3b5900a54f).
 
 * set up a [WoT search engine](https://github.com/Interactions-HSG/wot-search) on port 9090 (default)
 
