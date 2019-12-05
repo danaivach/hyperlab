@@ -34,7 +34,7 @@ order(111).
 
 +!ship(PR,L) : product(PR,L) <- .print("Order ready to get shipped!").
 
-+!deliver(PR,SRC,DST) : bench("A",SRC) & bench("E",DST) & product(PR,SRC) <-
++!deliver(PR,SRC,DST) : bench("A",SRC) & bench("C",DST) & product(PR,SRC) <-
 	?bench("B",B);
 	?bench("C",C);
 	!deliver(SRC,B);
@@ -68,7 +68,11 @@ order(111).
           	["http://www.w3.org/ns/td#Number", Y2],
 		["http://www.w3.org/ns/td#Number", Z2],
         	])[artifact_name(ArtifactName)].
-
+		
++thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName) : true <-
+  	.print("A thing artifact is available: " , ArtifactIRI, " in workspace: ", WorkspaceName);
+  	joinWorkspace(WorkspaceName, WorkspaceArtId);
+	focusWhenAvailable(ArtifactName).
 
 /*
 +!deliver(SRC,DST) : bench("B",SRC) & bench("C",DST) <-
