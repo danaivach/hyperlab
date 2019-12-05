@@ -17,17 +17,11 @@ mas playground2.0 {
     agent node_manager: node_manager.asl
     agent manager: manager.asl
     agent transporter1: transporter.asl {
-	focus: despatch.r1
-	focus: despatch.r2
-	focus: despatch.r3
-	focus: despatch.r4
+	focus: www.r1
     }
 
     workspace despatch {
         artifact r1: despatch.Robot1([1,2,3])
-	artifact r2: despatch.Robot2([4,5,6])
-	artifact r3: despatch.Robot3([4,5,6]) 
-	artifact r4: despatch.Robot3([4,10,6])   
     }
 }
 
