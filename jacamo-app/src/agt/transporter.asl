@@ -15,11 +15,12 @@ order(111).
 
 /* General Plans */
 
+/* Move item from A to C */
 
 +!start : order(PR)
 	 <- .print("A new order has been placed!");
-	!deliver(PR,[7,3,5],[7,15,5]);
-	!ship(PR,[7,15,5]).
+	!deliver(PR,[7,3,5],[7,9,5]);
+	!ship(PR,[7,9,5]).
 
 +moved(L) : true <- .print("Received moved to ", L, " signal ").
 
@@ -36,14 +37,9 @@ order(111).
 +!deliver(PR,SRC,DST) : bench("A",SRC) & bench("E",DST) & product(PR,SRC) <-
 	?bench("B",B);
 	?bench("C",C);
-	?bench("D",D);
 	!deliver(SRC,B);
 	-+product(PR,B);
-	!deliver(B,C);
-	-+product(PR,C);
-	!deliver(C,D);
-	-+product(PR,D);
-	!deliver(D,DST);
+	!deliver(B,DST);
 	-+product(PR,DST).
 	
 +!deliver(SRC,DST) : bench("A",SRC) & bench("B",DST) <-
@@ -53,6 +49,28 @@ order(111).
 	move(DST)[artifact_name(r1)];
 	release[artifact_name(r1)].
 
+
++!deliver(SRC,DST) : bench("B",SRC) & bench("C",DST) &
+   	 	thing_artifact_available(_, ArtifactName, WorkspaceName) &
+    		hasAction(_,"http://example.com/pickAndPlace")[artifact_name(_, ArtifactName)] 
+  	<-	
+		.nth(0,SRC,X1);
+		.nth(0,SRC,Y1);
+		.nth(0,SRC,Z1);
+		.nth(0,DST,X2);
+		.nth(0,DST,Y2);
+		.nth(0,DST,Z2);
+  		act("http://example.com/pickAndPlace", [
+          	["http://www.w3.org/ns/td#Number", X1], 
+          	["http://www.w3.org/ns/td#Number", Y1],
+		["http://www.w3.org/ns/td#Number", Z1],
+		["http://www.w3.org/ns/td#Number", X2], 
+          	["http://www.w3.org/ns/td#Number", Y2],
+		["http://www.w3.org/ns/td#Number", Z2],
+        	])[artifact_name(ArtifactName)].
+
+
+/*
 +!deliver(SRC,DST) : bench("B",SRC) & bench("C",DST) <-
 	.print("r2 will deliver from location ", SRC," to location ",DST);
 	initialize("default")[artifact_name(r2)];
@@ -65,24 +83,24 @@ order(111).
 	.print("r3 will deliver from location ", SRC, " to location ", DST);
 	pickAndPlace(SRC,DST)[artifact_name(r3)].
 
-/*
+
 +!deliver(SRC,DST) : bench("D",SRC) & bench("E",DST) <-
 	.print("r4 will deliver from location ",SRC," to location ",DST);
 	pickAndPlace(SRC,DST)[artifact_name(r4)].
-*/
+
 //Plans Type B (hardly)
 
 +!deliver(SRC,DST) : true <- 
 	.print("Let's ask an agent");
 	!askAgent({deliver}).
 
-/*
+
 +!consultArtifactManual(G) : artifact_available(_,ArtifactName,WorkSpace)
 			& artifact_manual_available(_,ArtifactName, Manual)
 			& 
 
 +!searchArtifactManual(G)
-*/
+
 +!askAgent(G) : true <-
 	.print("Ask the manager agent for a plan");
 	.send(manager, askHow, {+!deliver}, Plans);
@@ -90,7 +108,7 @@ order(111).
 	.print("Plan received");
 	!deliver.
 	
-/*
+
 //not like that but 
 +!consultArtifactManual : thing_artifact_available(_,ArtifactName,WorkspaceName)
 			& hasProperty(_,"cartago:Manual")[artifact_name(_,ArtifactName)]
