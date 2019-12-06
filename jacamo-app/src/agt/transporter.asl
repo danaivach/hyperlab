@@ -67,7 +67,7 @@ order(111).
    	 	thing_artifact_available(_, ArtifactName, WorkspaceName) &
     	//	hasAction(_,ACT)[artifact_name(_, ArtifactName)] 
 		hasAction(_,"http://example.com/PickAndPlace")[artifact_name(_,ArtifactName)]
-  	<-	.print("rrrrrrrrrrrrrrrrrrrrrrrready to deliver with thing artifact ", ArtifactName);
+  	<-	.print("Ready to deliver with thing artifact ", ArtifactName);
 		.nth(0,SRC,X1);
 		.nth(0,SRC,Y1);
 		.nth(0,SRC,Z1);
