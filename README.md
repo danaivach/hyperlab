@@ -3,9 +3,9 @@ A demo scenario for the Web Conference 2020, showcasing a dynamic WoT environmen
 
 # Setup
 * Install gradle
-* Run 'git submodule init' and 'git submodule update' to retrieve the latest version of the dependent repositories
-* In the yggrasil folder, run ./gradlew to build the jar file for yggrasil
-* In the wot-search folder, run ./gradlew to build the jar file for the hypermedia search engine
+* Run `git submodule init` and `git submodule update` to retrieve the latest version of the dependent repositories
+* In the yggrasil folder, run `./gradlew` to build the jar file for yggrasil
+* In the wot-search folder, run `./gradlew` to build the jar file for the hypermedia search engine
 
 ## Run it
 To run the system, the following steps are necessary:
