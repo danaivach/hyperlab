@@ -20,8 +20,8 @@ mas playground2.0 {
 	focus: www.r1
     }
 
-    workspace despatch {
-        artifact r1: despatch.Robot1([1,2,3])
+    workspace www {
+        artifact r1: www.Robot1([1,2,3])
     }
 }
 
