@@ -66,7 +66,7 @@ order(111).
 		["http://www.w3.org/ns/td#Number", Z1],
 		["http://www.w3.org/ns/td#Number", X2], 
           	["http://www.w3.org/ns/td#Number", Y2],
-		["http://www.w3.org/ns/td#Number", Z2],
+		["http://www.w3.org/ns/td#Number", Z2]
         	])[artifact_name(ArtifactName)].
 		
 +thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName) : true <-
