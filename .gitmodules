@@ -4,3 +4,6 @@
 [submodule "yggdrasil"]
 	path = yggdrasil
 	url = https://github.com/Interactions-HSG/yggdrasil.git
+[submodule "wot-search"]
+	path = wot-search
+	url = https://github.com/Interactions-HSG/wot-search
