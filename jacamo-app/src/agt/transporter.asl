@@ -1,4 +1,7 @@
 /* Initial beliefs and rules */
+
+environment_IRI("http://localhost:8080/environments/shopfloor").
+
 bench("A",[7,3,5]).
 bench("B",[7,6,5]).
 bench("C",[7,9,5]).
@@ -17,8 +20,18 @@ order(111).
 
 /* Move item from A to C */
 
-+!start : order(PR)
-	 <- .print("A new order has been placed!");
++!start : environment_IRI(EnvIRI) <- 
+	.print("Hello world, I'm Transporter 2.0. Let's see if I can help in the environment: ",EnvIRI);
+	.wait(1000);
+	.send(node_manager, achieve, environment_loaded(EnvIRI)).
+	
+
++environment_loaded(EnvIRI, WorkspacesNames) : true <-
+	.print("Environment loaded: ", EnvIRI);
+	!manageOrders.
+
++!manageOrders : order(PR) <-
+	 .print("A new order has been placed!");
 	!deliver(PR,[7,3,5],[7,9,5]);
 	!ship(PR,[7,9,5]).
 
@@ -52,8 +65,8 @@ order(111).
 
 +!deliver(SRC,DST) : bench("B",SRC) & bench("C",DST) &
    	 	thing_artifact_available(_, ArtifactName, WorkspaceName) &
-    		hasAction(_,"http://example.com/pickAndPlace")[artifact_name(_, ArtifactName)] 
-  	<-	
+    		hasAction(_,_)[artifact_name(_, ArtifactName)] 
+  	<-	.print("rrrrrrrrrrrrrrrrrrrrrrrready to deliver with thing artifact");
 		.nth(0,SRC,X1);
 		.nth(0,SRC,Y1);
 		.nth(0,SRC,Z1);
