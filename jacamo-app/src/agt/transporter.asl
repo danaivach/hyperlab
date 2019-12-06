@@ -65,22 +65,16 @@ order(111).
 
 +!deliver(SRC,DST) : bench("B",SRC) & bench("C",DST) &
    	 	thing_artifact_available(_, ArtifactName, WorkspaceName) &
-    		hasAction(_,_)[artifact_name(_, ArtifactName)] 
-  	<-	.print("rrrrrrrrrrrrrrrrrrrrrrrready to deliver with thing artifact");
+    	//	hasAction(_,ACT)[artifact_name(_, ArtifactName)] 
+		hasAction(_,"http://example.com/PickAndPlace")[artifact_name(_,ArtifactName)]
+  	<-	.print("rrrrrrrrrrrrrrrrrrrrrrrready to deliver with thing artifact ", ArtifactName);
 		.nth(0,SRC,X1);
 		.nth(0,SRC,Y1);
 		.nth(0,SRC,Z1);
 		.nth(0,DST,X2);
 		.nth(0,DST,Y2);
 		.nth(0,DST,Z2);
-  		act("http://example.com/pickAndPlace", [
-          	["http://www.w3.org/ns/td#Number", X1], 
-          	["http://www.w3.org/ns/td#Number", Y1],
-		["http://www.w3.org/ns/td#Number", Z1],
-		["http://www.w3.org/ns/td#Number", X2], 
-          	["http://www.w3.org/ns/td#Number", Y2],
-		["http://www.w3.org/ns/td#Number", Z2]
-        	])[artifact_name(ArtifactName)].
+  		act("http://example.com/PickAndPlace",[["http://www.w3c.org/ns/td#Number",X1],["http://www.w3c.org/ns/td#Number",Y1]])[artifact_name(ArtifactName)].
 		
 +thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName) : true <-
   	.print("A thing artifact is available: " , ArtifactIRI, " in workspace: ", WorkspaceName);
