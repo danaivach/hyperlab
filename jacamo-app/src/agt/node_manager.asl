@@ -9,11 +9,9 @@
 +!start : true <- 
 	.print("Hi from node_manager!");
 	makeArtifact("notification-server", "www.infra.NotificationServerArtifact", [8081], _);
-	start;
-	makeArtifact("envar", "www.infra.WebEnvironmentArtifact", [], WebEnvArtID);
 	start.
 
-/* 
+ 
 +!environment_loaded(EnvIRI)[source(Ag)] : environment_loaded(EnvIRI) <-
 	.send(Ag, tell, environment_loaded(EnvIRI)).
 
@@ -60,7 +58,6 @@
 	.print("[Artifact: ", ArtifactIRI, "] Name: ", ArtifactName, ", class name: ", ArtifactClassName, ", init params: ", InitParams, ", web sub hub IRI: ", WebSubHubIRI);
 	!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, WebSubHubIRI).
 	
-*/
 
 +!generateNewArtifact(ArtifactIRI) : true <-
 	.print("Creating new artifact: ", ArtifactIRI);

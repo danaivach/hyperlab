@@ -1,4 +1,7 @@
 /* Initial beliefs and rules */
+
+environment_IRI("http://localhost:8080/environments/shopfloor").
+
 bench("A",[7,3,5]).
 bench("B",[7,6,5]).
 bench("C",[7,9,5]).
@@ -17,8 +20,18 @@ order(111).
 
 /* Move item from A to C */
 
-+!start : order(PR)
-	 <- .print("A new order has been placed!");
++!start : environment_IRI(EnvIRI) <- 
+	.print("Hello world, I'm Transporter 2.0. Let's see if I can help in the environment: ",EnvIRI);
+	.wait(1000);
+	.send(node_manager, achieve, environment_loaded(EnvIRI)).
+	
+
++environment_loaded(EnvIRI, WorkspacesNames) : true <-
+	.print("Environment loaded: ", EnvIRI);
+	!manageOrders.
+
++!manageOrders : order(PR) <-
+	 .print("A new order has been placed!");
 	!deliver(PR,[7,3,5],[7,9,5]);
 	!ship(PR,[7,9,5]).
 
@@ -52,22 +65,19 @@ order(111).
 
 +!deliver(SRC,DST) : bench("B",SRC) & bench("C",DST) &
    	 	thing_artifact_available(_, ArtifactName, WorkspaceName) &
-    		hasAction(_,"http://example.com/pickAndPlace")[artifact_name(_, ArtifactName)] 
-  	<-	
+		hasAction(_,"http://example.com/PickAndPlace")[artifact_name(_,ArtifactName)]
+  	<-	.print("Ready to deliver with thing artifact ", ArtifactName);
 		.nth(0,SRC,X1);
-		.nth(0,SRC,Y1);
-		.nth(0,SRC,Z1);
+		.nth(1,SRC,Y1);
+		.nth(2,SRC,Z1);
 		.nth(0,DST,X2);
-		.nth(0,DST,Y2);
-		.nth(0,DST,Z2);
-  		act("http://example.com/pickAndPlace", [
-          	["http://www.w3.org/ns/td#Number", X1], 
-          	["http://www.w3.org/ns/td#Number", Y1],
-		["http://www.w3.org/ns/td#Number", Z1],
-		["http://www.w3.org/ns/td#Number", X2], 
-          	["http://www.w3.org/ns/td#Number", Y2],
-		["http://www.w3.org/ns/td#Number", Z2]
-        	])[artifact_name(ArtifactName)].
+		.nth(1,DST,Y2);
+		.nth(2,DST,Z2);
+  		act("http://example.com/PickAndPlace",[
+							["http://iotschema.org/CIExData", X1],
+					                ["http://iotschema.org/CIEyData", Y1],
+							["http://iotschema.org/CIEzData", Z1]
+							])[artifact_name(ArtifactName)].
 		
 +thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName) : true <-
   	.print("A thing artifact is available: " , ArtifactIRI, " in workspace: ", WorkspaceName);
