@@ -1,0 +1,43 @@
+package www;
+
+import java.util.*;
+import java.lang.Math;
+import cartago.*;
+
+public class Robot1 extends Artifact {
+	
+	final int range = 100;
+	int location[];
+
+	@OPERATION
+	void init(int x, int y){
+		location = new int[]{250,300};
+		defineObsProperty("location", location);
+		defineObsProperty("range",range); 
+	}
+
+	@OPERATION
+	void move(int x, int y){
+		signal("moved");
+	}
+
+	@OPERATION
+	void grasp(){
+		signal("grasped");
+	}
+
+	@OPERATION
+	void release(){
+		signal("released");
+
+	}
+
+
+	@OPERATION
+	boolean inRange(int x, int y){
+		boolean inRange = (Math.pow((x-location[0]),2) + Math.pow((y-location[1]),2) <= Math.pow(range,2));
+		System.out.println(x + "," + y + " is in range: " +inRange);
+		return (1>0);
+	}
+
+}

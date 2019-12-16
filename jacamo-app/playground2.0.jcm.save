@@ -15,12 +15,8 @@
 mas playground2.0 {
 
     agent node_manager: node_manager.asl
-    agent transporter1: transporter.asl{
-	focus: www.floorMap
-    }
+    agent transporter1: transporter.asl
 
-    workspace www {
-	artifact floorMap : www.ShopFloorMap
-   }
+
 }
 

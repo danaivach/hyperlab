@@ -2,15 +2,13 @@
 
 environment_IRI("http://localhost:8080/environments/shopfloor").
 
-bench("A",[7,3,5]).
-bench("B",[7,6,5]).
-bench("C",[7,9,5]).
-bench("D",[7,12,5]).
-bench("E",[7,15,5]).
+bench("A",[200,300]).
+bench("B",[300,300]).
+bench("C",[400,200]).
+bench("D",[500,300]).
 
-product(111,[7,3,5]).
-
-order(111).
+//destination
+destination(250,300).
 
 /*Initial goals */
 
@@ -28,41 +26,83 @@ order(111).
 
 +environment_loaded(EnvIRI, WorkspacesNames) : true <-
 	.print("Environment loaded: ", EnvIRI);
-	!manageOrders.
-
-+!manageOrders : order(PR) <-
-	 .print("A new order has been placed!");
-	!deliver(PR,[7,3,5],[7,9,5]);
-	!ship(PR,[7,9,5]).
-
-+moved(L) : true <- .print("Received moved to ", L, " signal ").
-
-+grasped : true <- .print("Received grasped signal").
-
-+released : true <- .print("Received released signal"). 
-
-+pickedAndPlaced(L1,L2) : true <- .print("Received pickedAndPlaced from ", L1, " to ", L2, " signal").
-
-+product(PR,L) : true <- .print("Product ", PR, " at location ", L).
-
-+!ship(PR,L) : product(PR,L) <- .print("Order ready to get shipped!").
-
-+!deliver(PR,SRC,DST) : bench("A",SRC) & bench("C",DST) & product(PR,SRC) <-
-	?bench("B",B);
-	?bench("C",C);
-	!deliver(SRC,B);
-	-+product(PR,B);
-	!deliver(B,DST);
-	-+product(PR,DST).
-	
-+!deliver(SRC,DST) : bench("A",SRC) & bench("B",DST) <-
-	.print("r1 will deliver from location ", SRC, " to location ", DST);
-	move(SRC)[artifact_name(r1)];
-	grasp[artifact_name(r1)];
-	move(DST)[artifact_name(r1)];
-	release[artifact_name(r1)].
+	+item_position(150,300).
 
 
++item_position(X1,Y1): destination(X2,Y2) &
+			X1=X2 &
+			Y1=Y2 <-
+			.print("Item is in its destination").
+
+
++item_position(X1,Y1): true <-
+		.print("Item in location (",X1,",",Y1,")");
+		?destination(X2,Y2);
+		!deliver(X1,Y1,X2,Y2).
+
+
+//+rotating(D) : true <- .print("Received signal: robot1 rotating ", D, "degrees").
+
++grasping : true <- .print("Received signal: robot1 grasping").
+
++releasing : true <- .print("Received signal: robot1 releasing"). 
+
++mounting : true <- .print("Received signal: robot2 mounting").
+
++moving(X,Y) : true <- .print("Received signal: robot2 moving to (",X,",",Y,")").
+
++testing : true <- .print("Received signal: testing").
+
++!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,RoboticArmArtifact, WorkspaceName) &
+			artifact_available(_,DriverArtifact,WorkspaceName) &
+			inRange(X1,Y1)[artifact_name(RoboticArmArtifact)] &
+			inRange(X2,Y2)[artifact_name(RoboticArmArtifact)] &
+			hasMounted[artifact_name(DriverArtifact)] <- 
+			release[artifact_name(DriverArtifact)];
+			move(X1,Y1)[artifact_name(RoboticArmArtifact)];
+			grasp[artifact_name(RoboticArmArtifact)];
+			move(X2,Y2)[artifact_name(RoboticArmArtifact)];
+			release[artifact_name(RoboticArmArtifact)];
+			-+item_position(X2,Y2).
+
+
++!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot1",RoboticArmName,WorkspaceName) &
+			artifact_available("www.Robot2",DriverName,WorkspaceName) <-
+		//	inRange(X1,Y1)[artifact_name(RoboticArmName)] <-
+			.print("Ready to deliver from (",X1,",",Y1,") to (",X2,",",Y2,")");
+			move(250,300)[artifact_name(DriverName)];
+		//	move(X1,Y1)[artifact_name(RoboticArmName)];
+		//	grasp[artifact_name(RoboticArmName)];
+		//	move(250,300)[artifact_name(RoboticArmName)];
+		//	release[artifact_name(RoboticArmName)];
+			mount[artifact_name(DriverName)];
+			move(X2,Y2)[artifact_name(DriverName)];
+			rotateTo[artifact_name(RoboticArmName)];
+			-+item_position(X2,Y2).
+
+
+		
++artifact_available("www.Robot2",ArtifactName,WorkspaceName) : true <-
+	.print("An artifact is available: ", ArtifactName, " in ", WorkspaceName);
+	joinWorkspace(WorkspaceName,WorkspaceArtId);
+	focusWhenAvailable(ArtifactName).
+
+
++thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName) : true <-
+  	.print("A thing artifact is available: " , ArtifactIRI, " in workspace: ", WorkspaceName);
+  	joinWorkspace(WorkspaceName, WorkspaceArtId);
+	focusWhenAvailable(ArtifactName).
+
+
+
+
+
+
+
+
+
+
+/* 
 +!deliver(SRC,DST) : bench("B",SRC) & bench("C",DST) &
    	 	thing_artifact_available(_, ArtifactName, WorkspaceName) &
 		hasAction(_,"http://example.com/PickAndPlace")[artifact_name(_,ArtifactName)]
@@ -74,54 +114,23 @@ order(111).
 		.nth(1,DST,Y2);
 		.nth(2,DST,Z2);
   		act("http://example.com/PickAndPlace",[
-							["http://iotschema.org/CIExData", X1],
-					                ["http://iotschema.org/CIEyData", Y1],
-							["http://iotschema.org/CIEzData", Z1]
+							["http://example.com/CCSx", X1],
+					                ["http://example.com/CCSy", Y1],
+							["http://example.com/CCSz", Z1],
+							["http://example.com/CCSx", X2],
+							["http://example.com/CCSy", Y2],
+							["http://example.com/CCSz", Z2]
 							])[artifact_name(ArtifactName)].
-		
-+thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName) : true <-
-  	.print("A thing artifact is available: " , ArtifactIRI, " in workspace: ", WorkspaceName);
-  	joinWorkspace(WorkspaceName, WorkspaceArtId);
-	focusWhenAvailable(ArtifactName).
+
+*/
+
 
 /*
-+!deliver(SRC,DST) : bench("B",SRC) & bench("C",DST) <-
-	.print("r2 will deliver from location ", SRC," to location ",DST);
-	initialize("default")[artifact_name(r2)];
-	move(SRC)[artifact_name(r2)];
-	grasp[artifact_name(r2)];
-	move(DST)[artifact_name(r2)];
-	release[artifact_name(r2)].
 
-+!deliver(SRC,DST) : bench("C",SRC) & bench("D",DST) <-
-	.print("r3 will deliver from location ", SRC, " to location ", DST);
-	pickAndPlace(SRC,DST)[artifact_name(r3)].
-
-
-+!deliver(SRC,DST) : bench("D",SRC) & bench("E",DST) <-
-	.print("r4 will deliver from location ",SRC," to location ",DST);
-	pickAndPlace(SRC,DST)[artifact_name(r4)].
-
-//Plans Type B (hardly)
-
-+!deliver(SRC,DST) : true <- 
-	.print("Let's ask an agent");
-	!askAgent({deliver}).
-
+//Plans Type B 
 
 +!consultArtifactManual(G) : artifact_available(_,ArtifactName,WorkSpace)
-			& artifact_manual_available(_,ArtifactName, Manual)
-			& 
-
-+!searchArtifactManual(G)
-
-+!askAgent(G) : true <-
-	.print("Ask the manager agent for a plan");
-	.send(manager, askHow, {+!deliver}, Plans);
-	.add_plan(Plans);
-	.print("Plan received");
-	!deliver.
-	
+			& artifact_manual_available(_,ArtifactName, Manual)	
 
 //not like that but 
 +!consultArtifactManual : thing_artifact_available(_,ArtifactName,WorkspaceName)
