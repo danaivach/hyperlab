@@ -7,6 +7,8 @@ A demo scenario for the Web Conference 2020, showcasing a dynamic WoT environmen
 * In the yggrasil folder, run `./gradlew` to build the jar file for yggrasil
 * In the wot-search folder, run `./gradlew` to build the jar file for the hypermedia search engine
 * In the hyperlab_demo_gui folder, run `npm install` to install the requirements for the ui-backend, i.e. node and express.js
+* In the hyperlab_demo_gui/ui folder, run `npm install` to install the requirements for the react ui
+* In the hyperlab_demo_gui/ui folder run `npm run build` to create a production build of the ui
 
 ## Run it
 To run the system, the following steps are necessary:
