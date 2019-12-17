@@ -10,8 +10,18 @@ public class Robot1 extends Artifact {
 	int location[] = new int[]{250,300};
 	
 	@OPERATION
-	void rotateTo(){
-		signal("testing");
+	void rotateTowards(int x, int y){
+		signal("rotating",180);
+	}
+
+	@OPERATION
+	void grasp(){
+		signal("grasping");
+	}
+
+	@OPERATION
+	void release(){
+		signal("releasing");
 	}
 
 	@OPERATION

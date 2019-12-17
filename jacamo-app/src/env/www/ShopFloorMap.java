@@ -14,21 +14,35 @@ public class ShopFloorMap extends Artifact{
 	
 	final static String UIAddress = "http://localhost:5000";
 
-	@OPERATION void move(String artifactName,int x, int y){
+	@OPERATION
+	void rotate(String artifactName, int degrees){
+		HttpPost request = new HttpPost(UIAddress + "/" + artifactName + "/rotate");
+		try{
+			String payload = "{\n" + 
+				" \"degrees\": " + degrees +"\n" +
+			"}";
+			request.setEntity(new StringEntity(payload));
+			request.addHeader("content-type", "application/json");
+			HttpClient client = HttpClientBuilder.create().build();
+			HttpResponse response = client.execute(request);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	@OPERATION 
+	void move(String artifactName,int x, int y){
 		HttpPost request = new HttpPost(UIAddress + "/" + artifactName + "/move");
 		try {
 			String payload = "{\n" +
 				" \"x\": " + x + ",\n" +
 				" \"y\": " + y + "\n" +
 			"}"; 
-			System.out.println("Ready to send " + payload+ " to " + UIAddress);
 			request.setEntity(new StringEntity(payload));
 			request.addHeader("content-type", "application/json");
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpResponse response = client.execute(request);
-			
-			System.out.println("Response: " + response.getStatusLine().getStatusCode());
-	
+			//System.out.println("Response: " + response.getStatusLine().getStatusCode());
 		} catch (Exception e){
 			e.printStackTrace();
 		}

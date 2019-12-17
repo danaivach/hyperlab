@@ -8,7 +8,7 @@ bench("C",[400,200]).
 bench("D",[500,300]).
 
 //destination
-destination(250,300).
+destination(250,500).
 
 /*Initial goals */
 
@@ -41,7 +41,8 @@ destination(250,300).
 		!deliver(X1,Y1,X2,Y2).
 
 
-//+rotating(D) : true <- .print("Received signal: robot1 rotating ", D, "degrees").
++rotating(D) : true <- .print("Received signal: robot1 rotating ", D, " degrees");
+			rotate("robot1",D)[artifact_name(floorMap)].
 
 +grasping : true <- .print("Received signal: robot1 grasping").
 
@@ -49,9 +50,9 @@ destination(250,300).
 
 +mounting : true <- .print("Received signal: robot2 mounting").
 
-+moving(X,Y) : true <- .print("Received signal: robot2 moving to (",X,",",Y,")").
++moving(X,Y) : true <- .print("Received signal: robot2 moving to (",X,",",Y,")");
+			move("robot2",X,Y)[artifact_name(floorMap)].
 
-+testing : true <- .print("Received signal: testing").
 
 +!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,RoboticArmArtifact, WorkspaceName) &
 			artifact_available(_,DriverArtifact,WorkspaceName) &
@@ -71,18 +72,17 @@ destination(250,300).
 		//	inRange(X1,Y1)[artifact_name(RoboticArmName)] <-
 			.print("Ready to deliver from (",X1,",",Y1,") to (",X2,",",Y2,")");
 			move(250,300)[artifact_name(DriverName)];
-		//	move(X1,Y1)[artifact_name(RoboticArmName)];
-		//	grasp[artifact_name(RoboticArmName)];
-		//	move(250,300)[artifact_name(RoboticArmName)];
-		//	release[artifact_name(RoboticArmName)];
+			rotateTowards(X1,Y1)[artifact_name(RoboticArmName)];
+			grasp[artifact_name(RoboticArmName)];
+			rotateTowards(250,300)[artifact_name(RoboticArmName)];
+			release[artifact_name(RoboticArmName)];
 			mount[artifact_name(DriverName)];
 			move(X2,Y2)[artifact_name(DriverName)];
-			rotateTo[artifact_name(RoboticArmName)];
 			-+item_position(X2,Y2).
 
 
 		
-+artifact_available("www.Robot2",ArtifactName,WorkspaceName) : true <-
++artifact_available(_,ArtifactName,WorkspaceName) : true <-
 	.print("An artifact is available: ", ArtifactName, " in ", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);
 	focusWhenAvailable(ArtifactName).
