@@ -1,0 +1,5 @@
+@prefix eve: <http://w3id.org/eve#> .
+
+              <>
+                a eve:Environment ;
+                eve:contains <http://localhost:8080/workspaces/interactionsWksp> .

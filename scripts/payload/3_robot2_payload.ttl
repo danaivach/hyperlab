@@ -1,0 +1,7 @@
+@prefix eve: <http://w3id.org/eve#> .
+
+              <>
+                a eve:Artifact ;
+                eve:hasName "robot2" ;
+                eve:isRobot "robot2" ;
+                eve:hasCartagoArtifact "www.Robot2" .
