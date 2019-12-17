@@ -4,9 +4,12 @@ echo -e '\n\nCreating environment...'
 curl -i -X POST \
   http://localhost:8080/environments/ \
   -H 'content-type: text/turtle' \
-  -H 'slug: env1' \
-  -d '<> a <http://w3id.org/eve#Environment> ;
-<http://w3id.org/eve#contains> <http://localhost:8080/workspaces/www> .'
+  -H 'slug: shopfloor' \
+  --data-raw '@prefix eve: <http://w3id.org/eve#> .
+
+              <>
+                a eve:Environment ;
+                eve:contains <http://localhost:8080/workspaces/interactionsWksp> .'
 
 sleep 1
 
@@ -14,38 +17,37 @@ echo -e '\n\nCreating workspace...'
 curl -i -X POST \
   http://localhost:8080/workspaces/ \
   -H 'content-type: text/turtle' \
-  -H 'slug: wksp1' \
-  -d '<> a <http://w3id.org/eve#Workspace> ;
-<http://w3id.org/eve#hasName> "www" .'
+  -H 'slug: interactionsWksp' \
+  --data-raw '@prefix eve: <http://w3id.org/eve#> .
+
+              <>
+                a eve:Workspace;
+                eve:hasName "interactionsWksp";
+                eve:contains <http://localhost:8080/artifacts/robot1>;
+                eve:contains <http://localhost:8080/artifacts/robot2>.'
+
+echo -e '\n\nCreating robot1 artifact...'
+curl -i -X POST \
+  http://localhost:8080/artifacts/ \
+  -H 'content-type: text/turtle' \
+  -H 'slug: robot1' \
+  --data-raw '@prefix eve: <http://w3id.org/eve#> .
+
+              <>
+                a eve:Artifact ;
+                eve:hasName "robot1" ;
+                eve:isRobot "robot1" ;
+                eve:hasCartagoArtifact "www.Robot1" .'
 
 echo -e '\n\nCreating robot2 artifact...'
 curl -i -X POST \
   http://localhost:8080/artifacts/ \
   -H 'content-type: text/turtle' \
   -H 'slug: robot2' \
-  -d '<> a <http://w3id.org/eve#Artifact> ;
-<http://w3id.org/eve#hasName> "robot2" ;
-<http://w3id.org/eve#hasCartagoArtifact> "ThingArtifact" .'
+  --data-raw '@prefix eve: <http://w3id.org/eve#> .
 
-echo -e '\n\nAdding robot2 artifact to workspace...'
-curl -i -X PUT \
-  http://localhost:8080/workspaces/www \
-  -H 'content-type: text/turtle' \
-  -d '<http://localhost:8080/workspaces/www> a <http://w3id.org/eve#Workspace> ;
-<http://w3id.org/eve#hasName> "www" ;
-<http://w3id.org/eve#contains> <http://localhost:8080/artifacts/robot2> .'
-
-echo -e '\n\nCreating robot artifact...'
-curl -i -X POST \
-  http://localhost:8080/artifacts/robot2 \
-  -H 'content-type: text/turtle' \
-  -H 'slug: hue1' \
-  --data-binary '@robot.ttl'
-
-echo -e '\n\nAdding robot artifact to workspace...'
-curl -i -X PUT \
-  http://localhost:8080/workspaces/www \
-  -H 'content-type: text/turtle' \
-  -d '<http://localhost:8080/workspaces/wksp1> a <http://w3id.org/eve#Workspace> ;
-<http://w3id.org/eve#hasName> "www" ;
-<http://w3id.org/eve#contains> <http://localhost:8080/artifacts/robot2> .'
+              <>
+                a eve:Artifact ;
+                eve:hasName "robot2" ;
+                eve:isRobot "robot2" ;
+                eve:hasCartagoArtifact "www.Robot2" .'
