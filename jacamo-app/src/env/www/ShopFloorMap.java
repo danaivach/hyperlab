@@ -1,24 +1,39 @@
 package www;
 
 import cartago.*;
+import www.infra.WebsocketClientEndpoint;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 
 public class ShopFloorMap extends Artifact{
-	
+
 	final static String UIAddress = "http://localhost:5000";
+	private WebsocketClientEndpoint ws;
+
+	void init() {
+		this.ws = new WebsocketClientEndpoint(URI.create("ws://localhost:40510"));
+		// add listener
+		this.ws.addMessageHandler(new WebsocketClientEndpoint.MessageHandler() {
+			public void handleMessage(String message) {
+				System.out.println(message);
+			}
+		});
+		ws.sendMessage("{'event':'addChannel','channel':'ok_btccny_ticker'}");
+
+	}
 
 	@OPERATION
 	void rotate(String artifactName, int degrees){
 		HttpPost request = new HttpPost(UIAddress + "/" + artifactName + "/rotate");
 		try{
-			String payload = "{\n" + 
+			String payload = "{\n" +
 				" \"degrees\": " + degrees +"\n" +
 			"}";
 			request.setEntity(new StringEntity(payload));
@@ -30,14 +45,14 @@ public class ShopFloorMap extends Artifact{
 		}
 	}
 
-	@OPERATION 
+	@OPERATION
 	void move(String artifactName,int x, int y){
 		HttpPost request = new HttpPost(UIAddress + "/" + artifactName + "/move");
 		try {
 			String payload = "{\n" +
 				" \"x\": " + x + ",\n" +
 				" \"y\": " + y + "\n" +
-			"}"; 
+			"}";
 			request.setEntity(new StringEntity(payload));
 			request.addHeader("content-type", "application/json");
 			HttpClient client = HttpClientBuilder.create().build();
