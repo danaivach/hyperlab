@@ -7,7 +7,13 @@ import cartago.*;
 public class Robot1 extends Artifact {
 
 	final int range = 50;
-	int location[] = new int[]{250,300};
+	int location[] = {250,300};
+	
+	
+	void init() {
+		defineObsProperty("location","Robot1",location[0],location[1]);
+		defineObsProperty("range","Robot1",range);
+	}
 	
 	@OPERATION
 	void rotateTowards(int x, int y){
@@ -22,15 +28,6 @@ public class Robot1 extends Artifact {
 	@OPERATION
 	void release(){
 		signal("releasing");
-	}
-
-	@OPERATION
-	boolean inRange(int x, int y){
-		boolean inRadius = Math.pow(x-location[0],2) + Math.pow(y-location[1],2) <= Math.pow(range,2);
-		System.out.println("in radius " + inRadius);
-		return true;
-	}
-	
-
+	}		
 
 }

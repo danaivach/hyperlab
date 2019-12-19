@@ -11,6 +11,12 @@ public class Robot2 extends Artifact {
 	@OPERATION
 	void mount(){
 		signal("mounting");
+		signal("mounted");
+	}
+
+	@OPERATION
+	void release(){
+		signal("releasing");
 	}
 
 }
