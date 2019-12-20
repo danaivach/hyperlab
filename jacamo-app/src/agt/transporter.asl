@@ -15,7 +15,6 @@ inRange(ArtifactName,X,Y)
 		range(ArtifactName,R) &
 		 (X-Xr)*(X-Xr) + (Y-Yr)*(Y-Yr) <= R*R.
 
-
 /*Initial goals */
 
 !start.
@@ -24,11 +23,11 @@ inRange(ArtifactName,X,Y)
 
 /* Move item from A to C */
 
-+!start : environment_IRI(EnvIRI) <- 
++!start : environment_IRI(EnvIRI) <-
 	.print("Hello world, I'm Transporter 2.0. Let's see if I can help in the environment: ",EnvIRI);
 	.wait(1000);
 	.send(node_manager, achieve, environment_loaded(EnvIRI)).
-	
+
 
 +environment_loaded(EnvIRI, WorkspacesNames) : true <-
 	.print("Environment loaded: ", EnvIRI);
@@ -54,9 +53,10 @@ inRange(ArtifactName,X,Y)
 	.print(ArtifactName, " has property range ",R).
 
 +rotating(D) : true <- .print("Received signal: robot1 rotating ", D, " degrees");
-			rotate("robot1",D)[artifact_name(floorMap)].
+			robotArmRotate("robot1",D)[artifact_name(floorMap)].
 
 +grasping : true <- .print("Received signal: robot1 grasping").
+
 
 +releasing : true <- .print("Received signal: robot1 releasing"); 
 			+item_free. 
@@ -66,9 +66,10 @@ inRange(ArtifactName,X,Y)
 +item_free : true <- .print("Item is not mounted").
 
 +moving(X,Y) : true <- .print("Received signal: robot2 moving to (",X,",",Y,")");
-			move("robot2",X,Y)[artifact_name(floorMap)].
+			driverMove("robot2",X,Y)[artifact_name(floorMap)].
 
 -item_free :true <- .print("Item is mounted").
+
 
 
 +!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,ThingArtifactName,WorkspaceName) &
@@ -78,8 +79,9 @@ inRange(ArtifactName,X,Y)
 			inRange(ThingArtifactName,X2,Y2) &
 			item_free<-
 			.print("Plan C: Ready to deliver with thing artifact ", ThingArtifactName, " from (",X1,",",Y1,") to (",X2,",",Y2,")");
-			//act("http://example.com/Base",[["http://example.com/Value", 512]])[artifact_name(ThingArtifactName)];
-			-+item_position(X2,Y2).
+			//act("http://example.com/Base",[["http://example.com/Value", 512]])[artifact_name(ThingArtifact)];
+			-+location(X2,Y2).
+
 
 			
 +!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,ThingArtifactName, WorkspaceName) &
@@ -117,8 +119,6 @@ inRange(ArtifactName,X,Y)
 	?range(R);
 	+location(ArtifactName,X,Y);
 	+range(ArtifactName,R).
-
-
 +artifact_available(_,ArtifactName,WorkspaceName) : true <-
 	.print("An artifact is available: ", ArtifactName, " in ", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);
@@ -137,41 +137,19 @@ inRange(ArtifactName,X,Y)
 
 
 
-
-
-
-
-
-
-
-/* 
-+!deliver(SRC,DST) : bench("B",SRC) & bench("C",DST) &
-   	 	thing_artifact_available(_, ArtifactName, WorkspaceName) &
-		.nth(0,SRC,X1);
-		.nth(1,SRC,Y1);
-		.nth(2,SRC,Z1);
-		.nth(0,DST,X2);
-		.nth(1,DST,Y2);
-		.nth(2,DST,Z2);
-  		
-*/
-
-
 /*
 
-//Plans Type B 
+//Plans Type B
 
 +!consultArtifactManual(G) : artifact_available(_,ArtifactName,WorkSpace)
-			& artifact_manual_available(_,ArtifactName, Manual)	
+			& artifact_manual_available(_,ArtifactName, Manual)
 
-//not like that but 
+//not like that but
 +!consultArtifactManual : thing_artifact_available(_,ArtifactName,WorkspaceName)
 			& hasProperty(_,"cartago:Manual")[artifact_name(_,ArtifactName)]
 		        & hasUsageProtocol(_,"cartago:")[artifact_name(_,ArtifactName)]
 	<-
 */
-	
-  
 
-{ include("$jacamoJar/templates/common-cartago.asl")} 
+{ include("$jacamoJar/templates/common-cartago.asl")}
 { include("$jacamoJar/templates/common-moise.asl")}
