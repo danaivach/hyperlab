@@ -44,13 +44,46 @@ public class ShopFloorMap extends Artifact{
 
 	}
 
+	// rotates the robotArm to the position [degrees]
 	@OPERATION
-	void rotate(String artifactName, int degrees){
+	void robotArmRotate(String artifactName, int degrees){
 		this.ws.sendMessage("{\"" + artifactName + "\":{\"rotate\":{\"degrees\":" + degrees + "}}}");
 	}
 
+	// attaches the ball to the robotArm (moves it to the end of the robot arm, when robotArm is rotated, the ball moves along until release is called)
 	@OPERATION
-	void move(String artifactName,int x, int y){
+	void robotArmGrasp(String artifactName){
+		this.ws.sendMessage("{\"" + artifactName + "\":{\"grasp\":true}}");
+	}
+
+	// releases the ball from the robotArm
+	@OPERATION
+	void robotArmRelease(String artifactName){
+		this.ws.sendMessage("{\"" + artifactName + "\":{\"grasp\":false}}");
+	}
+
+	// moves driver robot to coordinates x, y
+	@OPERATION
+	void driverMove(String artifactName, int x, int y){
 		this.ws.sendMessage("{\"" + artifactName + "\":{\"move\":{\"x\":" + x + ", \"y\":" + y + "}}}");
 	}
+
+	// loads ball on top of driver robot
+	@OPERATION
+	void driverLoad(String artifactName){
+		this.ws.sendMessage("{\"" + artifactName + "\":{\"load\":true}}");
+	}
+
+	// attaches ball in front of robot (robot now pushes it around while moving)
+	@OPERATION
+	void driverAttach(String artifactName){
+		this.ws.sendMessage("{\"" + artifactName + "\":{\"move\":true}}");
+	}
+
+	// releases an either loaded or attached ball
+	@OPERATION
+	void driverRelease(String artifactName){
+		this.ws.sendMessage("{\"" + artifactName + "\":{\"release\":true}}");
+	}
+
 }

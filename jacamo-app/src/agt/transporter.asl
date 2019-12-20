@@ -18,11 +18,11 @@ destination(250,500).
 
 /* Move item from A to C */
 
-+!start : environment_IRI(EnvIRI) <- 
++!start : environment_IRI(EnvIRI) <-
 	.print("Hello world, I'm Transporter 2.0. Let's see if I can help in the environment: ",EnvIRI);
 	.wait(1000);
 	.send(node_manager, achieve, environment_loaded(EnvIRI)).
-	
+
 
 +environment_loaded(EnvIRI, WorkspacesNames) : true <-
 	.print("Environment loaded: ", EnvIRI);
@@ -42,23 +42,23 @@ destination(250,500).
 
 
 +rotating(D) : true <- .print("Received signal: robot1 rotating ", D, " degrees");
-			rotate("robot1",D)[artifact_name(floorMap)].
+			robotArmRotate("robot1",D)[artifact_name(floorMap)].
 
 +grasping : true <- .print("Received signal: robot1 grasping").
 
-+releasing : true <- .print("Received signal: robot1 releasing"). 
++releasing : true <- .print("Received signal: robot1 releasing").
 
 +mounting : true <- .print("Received signal: robot2 mounting").
 
 +moving(X,Y) : true <- .print("Received signal: robot2 moving to (",X,",",Y,")");
-			move("robot2",X,Y)[artifact_name(floorMap)].
+			driverMove("robot2",X,Y)[artifact_name(floorMap)].
 
 
 +!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,RoboticArmArtifact, WorkspaceName) &
 			artifact_available(_,DriverArtifact,WorkspaceName) &
 			inRange(X1,Y1)[artifact_name(RoboticArmArtifact)] &
 			inRange(X2,Y2)[artifact_name(RoboticArmArtifact)] &
-			hasMounted[artifact_name(DriverArtifact)] <- 
+			hasMounted[artifact_name(DriverArtifact)] <-
 			release[artifact_name(DriverArtifact)];
 			move(X1,Y1)[artifact_name(RoboticArmArtifact)];
 			grasp[artifact_name(RoboticArmArtifact)];
@@ -81,7 +81,7 @@ destination(250,500).
 			-+item_position(X2,Y2).
 
 
-		
+
 +artifact_available(_,ArtifactName,WorkspaceName) : true <-
 	.print("An artifact is available: ", ArtifactName, " in ", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);
@@ -102,7 +102,7 @@ destination(250,500).
 
 
 
-/* 
+/*
 +!deliver(SRC,DST) : bench("B",SRC) & bench("C",DST) &
    	 	thing_artifact_available(_, ArtifactName, WorkspaceName) &
 		hasAction(_,"http://example.com/PickAndPlace")[artifact_name(_,ArtifactName)]
@@ -127,19 +127,19 @@ destination(250,500).
 
 /*
 
-//Plans Type B 
+//Plans Type B
 
 +!consultArtifactManual(G) : artifact_available(_,ArtifactName,WorkSpace)
-			& artifact_manual_available(_,ArtifactName, Manual)	
+			& artifact_manual_available(_,ArtifactName, Manual)
 
-//not like that but 
+//not like that but
 +!consultArtifactManual : thing_artifact_available(_,ArtifactName,WorkspaceName)
 			& hasProperty(_,"cartago:Manual")[artifact_name(_,ArtifactName)]
 		        & hasUsageProtocol(_,"cartago:")[artifact_name(_,ArtifactName)]
 	<-
 */
-	
-  
 
-{ include("$jacamoJar/templates/common-cartago.asl")} 
+
+
+{ include("$jacamoJar/templates/common-cartago.asl")}
 
