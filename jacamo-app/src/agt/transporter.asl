@@ -64,6 +64,7 @@ inRange(ArtifactName,X,Y)
 			.print("Plan B : Ready to deliver with artifact ", R2Name, " from (",X1,",",Y1,") to (",500,",",300,")");
 			move(500,400)[artifact_name(R2Name)];
 			unload[artifact_name(R2Name)];
+			+item_free;
 			-+item_position(500,400).
 
 
@@ -80,6 +81,7 @@ inRange(ArtifactName,X,Y)
 			rotateTowards(X1,Y2)[artifact_name(R1Name)];
 			release[artifact_name(R1Name)];
 			load[artifact_name(R2Name)];
+			-item_free;
 			-+item_position(X1,Y2).
 
 +!deliver(ThingArtifactName,X1,Y1,X2,Y2): true <-
@@ -87,7 +89,7 @@ inRange(ArtifactName,X,Y)
 			//TODO: These will be events from the Thing Artifact
 			+rotating(ThingArtifactName,180);
 			+grasping(ThingArtifactName);
-			+rotating(ThingArtifactName,270);
+			+rotating(ThingArtifactName,0);
 			+releasing(ThingArtifactName);
 			//act("http://example.com/Base",[["http://example.com/Value", 512]])[artifact_name(ThingArtifact)];
 			-+item_position(X2,Y2).
@@ -120,9 +122,6 @@ inRange(ArtifactName,X,Y)
 +rotating(D) : true <- .print("Received signal: Robot1 rotating ", D, " degrees");
 			robotArmRotate("robot1",D)[artifact_name(floorMap)].
 
-+rotating(ThingArtifactName,D) : true <- .print("Received signal: ",ThingArtifactName," rotating ", D, " degrees");
-					robotArmRotate(ThingArtifactName,D)[artifact_name(floorMap)].
-
 +grasping : true <- .print("Received signal: Robot1 grasping");
 		robotArmGrasp("robot1")[artifact_name(floorMap)].
 
@@ -130,15 +129,28 @@ inRange(ArtifactName,X,Y)
 			robotArmRelease("robot1")[artifact_name(floorMap)].
 
 +loading : true <- .print("Received signal: Robot2 loading");
-			driverLoad("robot2")[artifact_name(floorMap)];
-			-item_free.
+			-item_free;
+			driverLoad("robot2")[artifact_name(floorMap)].
 
 +unloading : true <- .print("Received signal: Robot2 unloading");
-			driverRelease("robot2")[artifact_name(floorMap)];
-			+item_free.
+			+item_free;
+			driverRelease("robot2")[artifact_name(floorMap)].
 
 +moving(X,Y) : true <- .print("Received signal: Robot2 moving to (",X,",",Y,")");
 			driverMove("robot2",X,Y)[artifact_name(floorMap)].
+
++rotating(ThingArtifactName,D) : true <- .print("Received signal: ",ThingArtifactName," rotating ", D, " degrees");
+					.wait(2000);
+					robotArmRotate(ThingArtifactName,D)[artifact_name(floorMap)].
+
++grasping(ThingArtifactName) : true <- .print("Received signal: ",ThingArtifactName," grasping");
+		.wait(2000);
+		robotArmGrasp(ThingArtifactName)[artifact_name(floorMap)].
+
++releasing(ThingArtifactName) : true <- .print("Received signal: ",ThingArtifactName, " releasing");
+			.wait(2000);
+			robotArmRelease(ThingArtifactName)[artifact_name(floorMap)].
+
 
 +item_free : true <- .print("Item is not loaded").
 

@@ -24,7 +24,7 @@ public class Robot2 extends Artifact {
 
 	private void waitL(){
 		try{
-			TimeUnit.SECONDS.sleep(3);
+			TimeUnit.SECONDS.sleep(2);
 		} catch (InterruptedException e) {}
 	}
 
