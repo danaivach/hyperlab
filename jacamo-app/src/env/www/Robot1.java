@@ -11,8 +11,8 @@ public class Robot1 extends Artifact {
 	
 	
 	void init() {
-		defineObsProperty("location","Robot1",location[0],location[1]);
-		defineObsProperty("range","Robot1",range);
+		defineObsProperty("location",location[0],location[1]);
+		defineObsProperty("range",range);
 	}
 	
 	@OPERATION
