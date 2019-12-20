@@ -82,11 +82,11 @@ inRange(ArtifactName,X,Y)
 			inRange(RoboticArmName,X1,Y1) &
 			inRange(RoboticArmName,X2,Y2) &
 			mounted <-
-			release[artifact_name(DriverArtifact)];
-			move(X1,Y1)[artifact_name(RoboticArmArtifact)];
-			grasp[artifact_name(RoboticArmArtifact)];
-			move(X2,Y2)[artifact_name(RoboticArmArtifact)];
-			release[artifact_name(RoboticArmArtifact)];
+			driverRelease[artifact_name(DriverArtifact)];
+			driverMove(X1,Y1)[artifact_name(RoboticArmArtifact)];
+			robotArmGrasp[artifact_name(RoboticArmArtifact)];
+			driverMove(X2,Y2)[artifact_name(RoboticArmArtifact)];
+			robotArmRelease[artifact_name(RoboticArmArtifact)];
 			-+item_position(X2,Y2).
 
 
@@ -97,11 +97,11 @@ inRange(ArtifactName,X,Y)
 			inRange(RoboticArmName,X1,Y2) <-
 			//inRange(X1)[artifact_name(RoboticArmName)]  <-
 			.print("Ready to deliver from (",X1,",",Y1,") to (",X1,",",Y2,") lets squise a sin " ,sin(1));
-			move(X1,Y1)[artifact_name(DriverName)];
+			driverMove(X1,Y1)[artifact_name(DriverName)];
 			rotateTowards(X1,Y1)[artifact_name(RoboticArmName)];
-			grasp[artifact_name(RoboticArmName)];
+			robotArmGrasp[artifact_name(RoboticArmName)];
 			rotateTowards(X1,Y2)[artifact_name(RoboticArmName)];
-			release[artifact_name(RoboticArmName)];
+			robotArmRelease[artifact_name(RoboticArmName)];
 			mount[artifact_name(DriverName)].
 			//-+item_position(X2,Y1).
 
