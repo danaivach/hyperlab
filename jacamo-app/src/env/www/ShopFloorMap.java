@@ -47,7 +47,7 @@ public class ShopFloorMap extends Artifact{
 	// rotates the robotArm to the position [degrees]
 	@OPERATION
 	void robotArmRotate(String artifactName, int degrees){
-		this.ws.sendMessage("{\"" + artifactName + "\":{\"rotate\":{\"degrees\":" + degrees + "}}}");
+		this.ws.sendMessage("{\"" + artifactName.toLowerCase() + "\":{\"rotate\":{\"degrees\":" + degrees + "}}}");
 	}
 
 	// attaches the ball to the robotArm (moves it to the end of the robot arm, when robotArm is rotated, the ball moves along until release is called)

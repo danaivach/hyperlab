@@ -2,13 +2,8 @@
 
 environment_IRI("http://localhost:8080/environments/shopfloor").
 
-bench("A",[200,300]).
-bench("B",[300,300]).
-bench("C",[400,200]).
-bench("D",[500,300]).
-
 //destination
-destination(600,300).
+destination(600,400).
 
 inRange(ArtifactName,X,Y)
 	:- location(ArtifactName,Xr,Yr) &
@@ -32,7 +27,7 @@ inRange(ArtifactName,X,Y)
 +environment_loaded(EnvIRI, WorkspacesNames) : true <-
 	.print("Environment loaded: ", EnvIRI);
 	+item_free;
-	+item_position(200,300).
+	+item_position(200,400).
 
 
 +item_position(X1,Y1): destination(X2,Y2) &
@@ -52,25 +47,6 @@ inRange(ArtifactName,X,Y)
 +range(ArtifactName,R) :true <-
 	.print(ArtifactName, " has property range ",R).
 
-+rotating(D) : true <- .print("Received signal: robot1 rotating ", D, " degrees");
-			robotArmRotate("robot1",D)[artifact_name(floorMap)].
-
-+grasping : true <- .print("Received signal: robot1 grasping").
-
-
-+releasing : true <- .print("Received signal: robot1 releasing"); 
-			+item_free. 
-
-+mounting : true <- .print("Received signal: robot2 mounting").
-
-+item_free : true <- .print("Item is not mounted").
-
-+moving(X,Y) : true <- .print("Received signal: robot2 moving to (",X,",",Y,")");
-			driverMove("robot2",X,Y)[artifact_name(floorMap)].
-
--item_free :true <- .print("Item is mounted").
-
-
 
 +!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,ThingArtifactName,WorkspaceName) &
 			hasAction(_,"http://example.com/Base")[artifact_name(_,ThingArtifactName)] &
@@ -78,10 +54,7 @@ inRange(ArtifactName,X,Y)
 			inRange(ThingArtifactName,X1,Y1) &
 			inRange(ThingArtifactName,X2,Y2) &
 			item_free<-
-			.print("Plan C: Ready to deliver with thing artifact ", ThingArtifactName, " from (",X1,",",Y1,") to (",X2,",",Y2,")");
-			//act("http://example.com/Base",[["http://example.com/Value", 512]])[artifact_name(ThingArtifact)];
-			-+location(X2,Y2).
-
+			!deliver(ThingArtifactName,X1,Y1,X2,Y2).
 
 			
 +!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,ThingArtifactName, WorkspaceName) &
@@ -89,9 +62,9 @@ inRange(ArtifactName,X,Y)
 			inRange(ThingArtifactName,X2,Y2) &
 			not item_free <- 
 			.print("Plan B : Ready to deliver with artifact ", R2Name, " from (",X1,",",Y1,") to (",500,",",300,")");
-			move(500,300)[artifact_name(R2Name)];
-			release[artifact_name(R2Name)];
-			-+item_position(500,300).
+			move(500,400)[artifact_name(R2Name)];
+			unload[artifact_name(R2Name)];
+			-+item_position(500,400).
 
 
 +!deliver(X1,Y1,X2,Y2) : item_free & 
@@ -106,11 +79,19 @@ inRange(ArtifactName,X,Y)
 			grasp[artifact_name(R1Name)];
 			rotateTowards(X1,Y2)[artifact_name(R1Name)];
 			release[artifact_name(R1Name)];
-			mount[artifact_name(R2Name)];
-			-item_free;
+			load[artifact_name(R2Name)];
 			-+item_position(X1,Y2).
 
-		
++!deliver(ThingArtifactName,X1,Y1,X2,Y2): true <-
+			.print("Plan C: Ready to deliver with thing artifact ", ThingArtifactName, " from (",X1,",",Y1,") to (",X2,",",Y2,")");
+			//TODO: These will be events from the Thing Artifact
+			+rotating(ThingArtifactName,180);
+			+grasping(ThingArtifactName);
+			+rotating(ThingArtifactName,270);
+			+releasing(ThingArtifactName);
+			//act("http://example.com/Base",[["http://example.com/Value", 512]])[artifact_name(ThingArtifact)];
+			-+item_position(X2,Y2).
+
 +artifact_available("www.Robot1",ArtifactName,WorkspaceName) : true <-
 	.print("An artifact is available: ", ArtifactName, " in ", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);
@@ -119,22 +100,49 @@ inRange(ArtifactName,X,Y)
 	?range(R);
 	+location(ArtifactName,X,Y);
 	+range(ArtifactName,R).
+
 +artifact_available(_,ArtifactName,WorkspaceName) : true <-
 	.print("An artifact is available: ", ArtifactName, " in ", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);
 	focusWhenAvailable(ArtifactName).
 	
 
-
 +thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName) : true <-
   	.print("A thing artifact is available: " , ArtifactIRI, " in workspace: ", WorkspaceName);
   	joinWorkspace(WorkspaceName, WorkspaceArtId);
 	focusWhenAvailable(ArtifactName);
-	+location(ArtifactName,550,300);
+	+location(ArtifactName,550,400);
 	+range(ArtifactName,50).
 
 +hasAction(_,_): true <- .print("Action detected").
 
+
++rotating(D) : true <- .print("Received signal: Robot1 rotating ", D, " degrees");
+			robotArmRotate("robot1",D)[artifact_name(floorMap)].
+
++rotating(ThingArtifactName,D) : true <- .print("Received signal: ",ThingArtifactName," rotating ", D, " degrees");
+					robotArmRotate(ThingArtifactName,D)[artifact_name(floorMap)].
+
++grasping : true <- .print("Received signal: Robot1 grasping");
+		robotArmGrasp("robot1")[artifact_name(floorMap)].
+
++releasing : true <- .print("Received signal: Robot1 releasing");
+			robotArmRelease("robot1")[artifact_name(floorMap)].
+
++loading : true <- .print("Received signal: Robot2 loading");
+			driverLoad("robot2")[artifact_name(floorMap)];
+			-item_free.
+
++unloading : true <- .print("Received signal: Robot2 unloading");
+			driverRelease("robot2")[artifact_name(floorMap)];
+			+item_free.
+
++moving(X,Y) : true <- .print("Received signal: Robot2 moving to (",X,",",Y,")");
+			driverMove("robot2",X,Y)[artifact_name(floorMap)].
+
++item_free : true <- .print("Item is not loaded").
+
+-item_free :true <- .print("Item is loaded").
 
 
 /*

@@ -1,13 +1,13 @@
 package www;
 
-import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.lang.Math;
 import cartago.*;
 
 public class Robot1 extends Artifact {
 
 	final int range = 50;
-	int location[] = {250,300};
+	int location[] = {250,400};
 	
 	
 	void init() {
@@ -17,17 +17,26 @@ public class Robot1 extends Artifact {
 	
 	@OPERATION
 	void rotateTowards(int x, int y){
+		waitL();
 		signal("rotating",180);
 	}
 
 	@OPERATION
 	void grasp(){
+		waitL();
 		signal("grasping");
 	}
 
 	@OPERATION
 	void release(){
+		waitL();
 		signal("releasing");
 	}		
+
+	private void waitL(){
+		try{
+			TimeUnit.SECONDS.sleep(3);
+		} catch (InterruptedException e) {}
+	}
 
 }
