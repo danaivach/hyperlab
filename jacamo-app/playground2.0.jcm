@@ -16,10 +16,12 @@ mas playground2.0 {
 
     agent node_manager: node_manager.asl
     agent transporter1: transporter.asl{
+	focus: www.calculator
 	focus: www.floorMap
     }
 
     workspace www {
+	artifact calculator : www.SpatialCalculator
 	artifact floorMap : www.ShopFloorMap
    }
 }

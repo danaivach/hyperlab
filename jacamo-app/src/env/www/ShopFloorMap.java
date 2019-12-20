@@ -34,6 +34,7 @@ public class ShopFloorMap extends Artifact{
 							int x = jo.getInt("x");
 							int y = jo.getInt("y");
 							System.out.println("received request to placeObject at x: " + String.valueOf(x) + " / y:" + String.valueOf(y));
+							signal("item_position",x,y);
 						}
 					}
 				} catch(JSONException e) {

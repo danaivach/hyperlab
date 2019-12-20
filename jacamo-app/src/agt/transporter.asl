@@ -26,8 +26,7 @@ inRange(ArtifactName,X,Y)
 
 +environment_loaded(EnvIRI, WorkspacesNames) : true <-
 	.print("Environment loaded: ", EnvIRI);
-	+item_free;
-	+item_position(200,400).
+	+item_free.
 
 
 +item_position(X1,Y1): destination(X2,Y2) &
@@ -54,7 +53,11 @@ inRange(ArtifactName,X,Y)
 			inRange(ThingArtifactName,X1,Y1) &
 			inRange(ThingArtifactName,X2,Y2) &
 			item_free<-
-			!deliver(ThingArtifactName,X1,Y1,X2,Y2).
+			?location(ThingArtifactName,Xr,Yr);
+			angularDisplacement(X1,Y1,Xr,Yr,D1);
+			angularDisplacement(X2,Y2,Xr,Yr,D2);
+			.print("Need Thing artifact to deliver from (",X1,",",Y1,") to (",X2,",",Y2,")");
+			!deliver(ThingArtifactName,D1,D2).
 
 			
 +!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,ThingArtifactName, WorkspaceName) &
@@ -84,15 +87,17 @@ inRange(ArtifactName,X,Y)
 			-item_free;
 			-+item_position(X1,Y2).
 
-+!deliver(ThingArtifactName,X1,Y1,X2,Y2): true <-
-			.print("Plan C: Ready to deliver with thing artifact ", ThingArtifactName, " from (",X1,",",Y1,") to (",X2,",",Y2,")");
++!deliver(ThingArtifactName,D1,D2): true <-
+			.print("Plan C: Deliver with Thing artifact ", ThingArtifactName);
 			//TODO: These will be events from the Thing Artifact
-			+rotating(ThingArtifactName,180);
+			
+			+rotating(ThingArtifactName,D1);
 			+grasping(ThingArtifactName);
-			+rotating(ThingArtifactName,0);
+			+rotating(ThingArtifactName,D2);
 			+releasing(ThingArtifactName);
 			//act("http://example.com/Base",[["http://example.com/Value", 512]])[artifact_name(ThingArtifact)];
 			-+item_position(X2,Y2).
+
 
 +artifact_available("www.Robot1",ArtifactName,WorkspaceName) : true <-
 	.print("An artifact is available: ", ArtifactName, " in ", WorkspaceName);
@@ -117,7 +122,6 @@ inRange(ArtifactName,X,Y)
 	+range(ArtifactName,50).
 
 +hasAction(_,_): true <- .print("Action detected").
-
 
 +rotating(D) : true <- .print("Received signal: Robot1 rotating ", D, " degrees");
 			robotArmRotate("robot1",D)[artifact_name(floorMap)].
