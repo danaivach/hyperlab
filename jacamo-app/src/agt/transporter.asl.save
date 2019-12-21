@@ -4,7 +4,7 @@ environment_IRI("http://localhost:8080/environments/shopfloor").
 
 
 //Item is initially free in the environment
-item_free.
+on_ground.
 
 
 //Destination set to (600,400)
@@ -57,8 +57,7 @@ inRange(ArtifactName,X,Y)
 			hasAction(_,"http://example.com/Base")[artifact_name(_,ThingArtifactName)] &
 			hasAction(_,"http://example.com/Gripper")[artifact_name(_,ThingArtifactName)] &
 			inRange(ThingArtifactName,X1,Y1) &
-			inRange(ThingArtifactName,X2,Y2) &
-			item_free<-
+			inRange(ThingArtifactName,X2,Y2) <-
 			?location(ThingArtifactName,Xr,Yr);
 			angularDisplacement(X1,Y1,Xr,Yr,D1);
 			angularDisplacement(X2,Y2,Xr,Yr,D2);
@@ -69,37 +68,34 @@ inRange(ArtifactName,X,Y)
 +!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,ThingArtifactName, WorkspaceName) &
 			artifact_available("www.Robot2",R2Name,WorkspaceName) &
 			inRange(ThingArtifactName,X2,Y2) &
-			not item_free <- 
+			not inRange(ThingArtifactName,X1,Y1)
+			item_raised_by(RName) <- 
 			?location(ThingArtifactName,X,Y);
 			?range(ThingArtifactName,R);
 			.print("Plan B : Ready to deliver with artifact ", R2Name, " from (",X1,",",Y1,") to (",500,",",300,")");
+			move(300,400)[artifact_name(R2Name)];
+			load[artifact_name(R2Name)];
 			move(500,400)[artifact_name(R2Name)];
 			unload[artifact_name(R2Name)];
-			+item_free;
 			-+item_position(500,400).
 
 
-+!deliver(X1,Y1,X2,Y2) : item_free & 
-			artifact_available("www.Robot1",R1Name,WorkspaceName) &
++!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot1",R1Name,WorkspaceName) &
 			artifact_available("www.Robot2",R2Name,WorkspaceName) &
-			inRange(R1Name,X1,Y1) & 
-			.relevant_plans({+!pickAndPlace(D1,D2)},P1)<- 
+			inRange(R1Name,X1,Y1) 
+			not inRange(R1Name,X1,Y1) <- 
 			.print("Plan A: Ready to deliver with artifact ", R1Name, " from (",X1,",",Y1,") to (",X1,",",Y2,")");
 			?location(R1Name,Xr,Yr);
 			?range(R1Name,R);
 			angularDisplacement(X1,Y1,Xr,Yr,D1);
 			angularDisplacement(X2,Y2,Xr,Yr,D2);
-			lineCircleCloseIntersection(X2,Y2,Xr,Yr,R,Xi,Yi);
-			move(300,400)[artifact_name(R2Name)];
+			//lineCircleCloseIntersection(X2,Y2,Xr,Yr,R,Xi,Yi);
 			rotate(D1)[artifact_name(R1Name)];
 			grasp[artifact_name(R1Name)];
 			rotate(D2)[artifact_name(R1Name)];
 			release[artifact_name(R1Name)];
-			load[artifact_name(R2Name)];
-			-item_free;
+			-item_on_ground;
 			-+item_position(300,400).
-
-+!pickAndPlace(D1,D2) : true <- .print("nothin").
 
 +!deliver(ThingArtifactName,D1,D2): true <-
 			.print("Plan C: Deliver with Thing artifact ", D1, D2, ThingArtifactName);

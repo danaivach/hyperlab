@@ -16,9 +16,9 @@ public class Robot1 extends Artifact {
 	}
 	
 	@OPERATION
-	void rotateTowards(int x, int y){
+	void rotate(int degrees){
 		waitL();
-		signal("rotating",180);
+		signal("rotating", degrees);
 	}
 
 	@OPERATION
