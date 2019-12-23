@@ -19,7 +19,6 @@
 	.print("Received request from ", Ag, " to load enviornment: ", EnvIRI);
 	makeArtifact("envar", "www.infra.WebEnvironmentArtifact", [EnvIRI], WebEnvArtID);
 	focusWhenAvailable("envar");
-	makeArtifact("manualRepo", "www.infra.ManualRepoArtifact");
 	+web_environment_artifact_id(WebEnvArtID);
 	getWorkspaceIRIs(WorkspaceIRIs);
 	.print("Available workspaces: ", WorkspaceIRIs);
@@ -37,6 +36,8 @@
 	.print("[Workspace: ", WorkspaceIRI, "] Name: ", WorkspaceName, ", available artifacts: ", WorkspaceArtifactIRIs);
 	createWorkspace(WorkspaceName);
 	joinWorkspace(WorkspaceName, WorkspaceArtId);
+	!createCartagoArtifact(WorkspaceName,"manualRepo","www.infra.ManualRepoArtifact",[],MR);
+	focusWhenAvailable("manualRepo");
 	+artifact_details(WorkspaceIRI, WorkspaceName, WorkspaceArtifactIRIs, WorkspaceArtId);
 	registerArtifactForNotifications(WorkspaceIRI, WebEnvArtID, WorkspaceWebSubHubIRI);
 	!buildArtifacts(WorkspaceName, WorkspaceArtifactIRIs);
@@ -104,26 +105,11 @@
 +!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, HasManual, WebSubHubIRI) : true <-
 	.print("Discovered an artifact I cannot create: ", ArtifactIRI).
 
-
+	
 +!createThingArtifact(WorkspaceName, ArtifactName, ArtifactIRI, ArtID) : true <-
-	-print("Creating Thing Artifact");
 	makeArtifact(ArtifactName, "www.ThingArtifact", [ArtifactIRI], ArtID);
 	+artifact_details(ArtifactIRI, ArtifactName, ArtID);
 	.broadcast(tell, thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName)).
-
-	
-+!createThingArtifact(WorkspaceName, ArtifactName, ArtifactIRI, ArtID) : true <-
-	-print("Creating Thing Artifact");
-	makeArtifact(ArtifactName, "www.ThingArtifact", [ArtifactIRI], ArtID);
-	+artifact_details(ArtifactIRI, ArtifactName, ArtID);
-	.broadcast(tell, thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName)).
-
-	
-+!createCartagoArtifact(WorkspaceName, ArtifactName, ArtifactClassName, InitParams, ArtID) : true <-
-	.print("Creating Cartago Artifact");
-	makeArtifact(ArtifactName, ArtifactClassName, InitParams, ArtID);
-	+artifact_details(ArtifactIRI, ArtifactName, ArtifactClassName, ArtID);
-	.broadcast(tell, artifact_available(ArtifactClassName, ArtifactName, WorkspaceName)).
 
 
 +!createCartagoArtifact(WorkspaceName, ArtifactName, ArtifactClassName, InitParams, ArtID) : true <-
@@ -140,11 +126,11 @@
 
 
 +!generateArtifactManual(ArtifactIRI, ArtifactClassOrName, false) : true <-
-	.print("No manual found for: ", ArtifactClassOrName).
+	.print("No manual found for the artifact: ", ArtifactClassOrName).
 
 
 +!registerArtifactManual(ManualId, ManualName, ManualUse, ManualDetails) : true <-
-	.print(ManualId , " ", ManualName);
+	.print("Found a manual for the artifact ",ManualId , ". Available usage protocols: ", ManualName);
 	registerManual(ManualId, ManualName, ManualUse, ManualDetails).
 
 
