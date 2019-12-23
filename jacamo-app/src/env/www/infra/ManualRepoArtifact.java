@@ -26,10 +26,10 @@ public class ManualRepoArtifact extends Artifact {
 	@OPERATION
 	void registerManual(String artifactId, String manualName, Object protNamesOb, Object protDetailsOb){
 		//hashmap does not comply
-		List<List<String>> protDetails = (List<List<String>>) protDetailsOb;
-		System.out.println("ok till here");	
+		List<List<String>> protDetails = (List<List<String>>) protDetailsOb;	
 		List<String> protNames = (ArrayList<String>) protNamesOb;
 		Iterator<String> nameIt = protNames.iterator();
+
 		Iterator<List<String>> detIt = protDetails.iterator();
 		while (nameIt.hasNext() && detIt.hasNext()){
 			registerManualProtocol(artifactId, manualName, nameIt.next(), detIt.next());
@@ -78,7 +78,6 @@ public class ManualRepoArtifact extends Artifact {
 		String preconditions = prot.getPreconditions();
 		String body = prot.getBody();
 		String jasonPlan = "+!" + function + " : " + preconditions + " <- " + body + "." ;
-		System.out.println(jasonPlan);
 		
 		defineObsProperty("hasUsageProtocol" , name , jasonPlan);
 		
@@ -95,7 +94,7 @@ public class ManualRepoArtifact extends Artifact {
 							 			  + cartagoUsageProtBody
 						                          + " } " ;
 	        String cartagoManualInput = " manual " + manualName + " { " + cartagoUsageProt + " } " ;
-		System.out.println(cartagoManualInput);
+		
 		try{
 			ArtifactManualParser parser = new ArtifactManualParser(new StringReader(cartagoManualInput));
 			parser.parse();
