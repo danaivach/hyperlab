@@ -13,7 +13,7 @@ public class SpatialCalculator extends Artifact {
 		double distance = Math.sqrt(Math.pow(x-xr,2) + Math.pow(y-yr,2));
 		double rad = Math.atan2((y-yr),(x-xr));
 		double deg = rad * (180.0 / Math.PI);
-		deg = (deg > 0.0 ? deg : 360.0 + deg);
+		deg = (deg >= 0.0 ? deg : 360.0 + deg);
 		degrees.set((int) deg);
 				
 	}
