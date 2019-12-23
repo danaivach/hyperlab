@@ -1,0 +1,49 @@
+@prefix td: <http://www.w3.org/ns/td#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix iot: <http://iotschema.org/> .
+@prefix http: <http://iotschema.org/protocol/http> .
+@prefix eve: <http://w3id.org/eve#> .
+@prefix ex: <http://example.com/> .
+
+<http://localhost:8080/artifacts/robot3>
+  a td:Thing, eve:Artifact;
+  td:name "Robot3"^^xsd:string ;
+  td:base "http://192.168.2.50/"^^xsd:anyURI ;
+  td:interaction  [
+    a td:Action, ex:Base ;
+    td:name "Base"^^xsd:string ;
+    td:form [
+      http:methodName "PUT"^^xsd:string ;
+      td:href "https://api.interactions.ics.unisg.ch/leubot/wrist/rotation"^^xsd:anyURI ;
+      td:mediaType "application/json"^^xsd:string ;
+      td:rel "invokeAction"^^xsd:string
+    ] ;
+    td:inputSchema [
+      td:schemaType td:Object ;
+      td:field [
+        td:name "token"^^xsd:string ;
+        td:schema [ td:schemaType td:Boolean; td:const "\"c347b252a29f75104fb47b10b4e75e5c\"" ]
+      ] ;
+     td:field [
+        td:name "value"^^xsd:string ;
+        td:schema [ a ex:Value ; td:schemaType td:Number ]
+      ]
+    ]
+   ];
+   td:interaction  [
+    a td:Action, ex:Gripper ;
+    td:name "Gripper"^^xsd:string ;
+    td:form [
+      http:methodName "PUT"^^xsd:string ;
+      td:href "https://api.interactions.ics.unisg.ch/leubot/gripper"^^xsd:anyURI ;
+      td:mediaType "application/json"^^xsd:string ;
+      td:rel "invokeAction"^^xsd:string
+    ] ;
+    td:inputSchema [
+      td:schemaType td:Object ;
+      td:field [
+        td:name "value"^^xsd:string ;
+        td:schema [ a ex:Value ; td:schemaType td:Number ]
+      ]
+    ]
+  ].
