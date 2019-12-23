@@ -3,6 +3,8 @@ package www;
 import java.util.List;
 import java.util.ArrayList;
 
+package www;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -27,7 +29,8 @@ public class SearchEngineArtifact extends Artifact {
 	}
 	
 	@OPERATION
-	void searchArtifact(String prefix, String subject, String predicate, String object) {
+	void searchArtifact(String prefix, String subject, String predicate, String object, 
+			OpFeedbackParam<String> subjectRes, OpFeedbackParam<String> predicateRes, OpFeedbackParam<String> objectRes) {
 	    log("Searching on " + searchEngineUri);
 	    HttpPost request = new HttpPost(searchEngineUri);
 	    
@@ -42,39 +45,28 @@ public class SearchEngineArtifact extends Artifact {
 			object = "?y";
 		}
 	    String spo = subject + " " + predicate + " " + object;
-	    String construct = " construct {" + spo + " } where {" + spo + "}";
-        String sparqlQuery = prefix.length() > 0 ?  "@prefix " + prefix + construct : construct;
+        String sparqlQuery = "@prefix " + prefix + " construct {" + spo + " } where {" + spo + "}";
         log(sparqlQuery);
         try {
             request.setEntity(new StringEntity(sparqlQuery));
             HttpClient client = HttpClientBuilder.create().build();
             HttpResponse response = client.execute(request);
             String resultString = EntityUtils.toString(response.getEntity());
-            //log("Response[" + response.getStatusLine().getStatusCode() + "] " + resultString);
+            log("Response[" + response.getStatusLine().getStatusCode() + ": " + resultString);
+            // assuming only 1 artifact returned
             if (resultString.trim().length() > 0) {
-            		List<String> resultList = new ArrayList<String>();
-      	    		String[] resultLines = resultString.split("\n");
-      	    		for (int i = 0; i < resultLines.length; i++) {
-      	    			if (resultLines[i].length() < 1 || resultLines[i].contains("@prefix")) {
-      	    				continue;
-      	    			} 
-      	    			String[] splittedLine = resultLines[i].split(" ");
-      	    			String artifactUri = splittedLine[0].replace("<", "").replaceAll(">", "");
-      	    			if (resultLines[i].contains("waterConsumption")) {
-      	    				signal("water_artifact_found", artifactUri);
-					} else if (resultLines[i].contains("energyConsumption")) {
-  	    					signal("energy_artifact_found", artifactUri);
-					} else if (resultLines[i].contains("OutsideWeatherArtifact")) {
-	    					signal("weather_artifact_found", artifactUri);
-					} else if (resultLines[i].contains("MusicPlayer")) {
-						signal("music_artifact_found", artifactUri);
-					}
-      	    			else {
-      	    				signal("artifact_found", artifactUri);
-      	    			}
-      			}
+            		resultString = resultString.replace("\n", "");
+            		log(resultString);
+            		String[] splittedResult = resultString.split(" ");
+            		log(splittedResult[3]);
+                String resultObject = splittedResult[5].trim().replace("<", "").replace(">", "");
+                String resultPredicate = splittedResult[4].trim().replace("<", "").replace(">", "");
+                String resultSubject = splittedResult[3].substring(1).trim().replace("<", "").replace(">", "");
+                objectRes.set(resultObject);
+                subjectRes.set(resultSubject);
+                predicateRes.set(resultPredicate);
 			} else {
-				//failed("no result","no_result","query_returned_empty");
+				failed("no result","no_result","query_returned_empty");
 			}
             
         } catch (Exception e) {
@@ -82,4 +74,3 @@ public class SearchEngineArtifact extends Artifact {
         }
     	}
 }
-
