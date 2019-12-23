@@ -68,7 +68,7 @@ in_library(G)
 			//TODO: These will be events from the Thing Artifact
 			+rotating(ThingArtifactName,D1);
 			+grasping(ThingArtifactName);
-			+rotating(ThingArtifactName,D2);
+			+rotating(ThingArtifactName,0);
 			+releasing(ThingArtifactName);
 			//act("http://example.com/Base",[["http://example.com/Value", 512]])[artifact_name(ThingArtifact)];
 			-+item_position(X2,Y2).

@@ -140,7 +140,7 @@
 
 
 +!generateArtifactManual(ArtifactIRI, ArtifactClassOrName, false) : true <-
-	.print("No manual found for manual for: ", ArtifactClassOrName).
+	.print("No manual found for: ", ArtifactClassOrName).
 
 
 +!registerArtifactManual(ManualId, ManualName, ManualUse, ManualDetails) : true <-
