@@ -8,14 +8,14 @@ import java.net.*;
 import java.util.Scanner;
 
 public class Robot1 extends Artifact {
-
+	
 	final int range = 50;
 	int location[] = {250,400};
 	
 	
 	void init() {
 		defineObsProperty("location",location[0],location[1]);
-		defineObsProperty("range",range);
+		defineObsProperty("range", range);
 	}
 	
 	@OPERATION

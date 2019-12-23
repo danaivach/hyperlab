@@ -27,6 +27,18 @@ public class Robot2 extends Artifact {
 		signal("unloading");
 	}
 
+	@OPERATION
+	void attach(){
+		waitL();
+		signal("attaching");
+	}
+
+	@OPERATION
+	void detatch(){
+		waitL();
+		signal("detatching");
+	}
+	
 	private void waitL(){
 		try{
 			TimeUnit.SECONDS.sleep(2);
