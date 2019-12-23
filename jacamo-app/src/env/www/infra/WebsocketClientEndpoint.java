@@ -21,6 +21,8 @@ public class WebsocketClientEndpoint {
     Session userSession = null;
     private MessageHandler messageHandler;
 
+    private boolean clientRunning;
+
     public WebsocketClientEndpoint(URI endpointURI) {
         try {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
@@ -39,6 +41,9 @@ public class WebsocketClientEndpoint {
     public void onOpen(Session userSession) {
         System.out.println("opening websocket");
         this.userSession = userSession;
+	
+	clientRunning = true;
+	
     }
 
     /**
@@ -51,6 +56,7 @@ public class WebsocketClientEndpoint {
     public void onClose(Session userSession, CloseReason reason) {
         System.out.println("closing websocket");
         this.userSession = null;
+	clientRunning = false;
     }
 
     /**
@@ -92,4 +98,9 @@ public class WebsocketClientEndpoint {
 
         public void handleMessage(String message);
     }
+
+
+    public boolean isRunning() {
+	return clientRunning;
+    }		
 }

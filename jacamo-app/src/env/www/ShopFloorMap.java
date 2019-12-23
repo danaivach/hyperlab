@@ -1,7 +1,14 @@
 package www;
 
-import cartago.*;
+import cartago.Artifact;
+import cartago.AgentId;
+import cartago.OPERATION;
+import cartago.INTERNAL_OPERATION;
+
 import www.infra.WebsocketClientEndpoint;
+import www.infra.SimulationNotification;
+import www.infra.SimulationNotificationQueue;
+import www.infra.AgentRegistry;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -14,17 +21,25 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONObject;
 import org.json.JSONException;
 
+import java.util.AbstractQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 public class ShopFloorMap extends Artifact{
 
 	final static String UIAddress = "http://localhost:5000";
 	private WebsocketClientEndpoint ws;
 
+	public static final int NOTIFICATION_DELAY = 10;
+
 	void init() {
 		this.ws = new WebsocketClientEndpoint(URI.create("ws://localhost:40510"));
+		
+		execInternalOp("deliverNotifications");
+
 		// add listener
 		this.ws.addMessageHandler(new WebsocketClientEndpoint.MessageHandler() {
 			public void handleMessage(String message) {
-				System.out.println("Websocket received: " + message);
+				//System.out.println("Websocket received: " + message);
 				try {
 					JSONObject jo = new JSONObject(message);
 					if (jo.has("jacamo")) {
@@ -33,8 +48,10 @@ public class ShopFloorMap extends Artifact{
 							jo = (JSONObject) jo.get("placeObject");
 							int x = jo.getInt("x");
 							int y = jo.getInt("y");
-							System.out.println("received request to placeObject at x: " + String.valueOf(x) + " / y:" + String.valueOf(y));
-							signal("item_position",x,y);
+							System.out.println("Received request to placeObject at x: " + String.valueOf(x) + " / y:" + String.valueOf(y));
+							
+							//AgentId receiverId = AgentRegistry.getInstance().get("transporter1"); 
+							SimulationNotificationQueue.getInstance().add(new SimulationNotification("transporter1","item_position",x,y));
 						}
 					}
 				} catch(JSONException e) {
@@ -44,6 +61,7 @@ public class ShopFloorMap extends Artifact{
 		});
 
 	}
+		
 
 	// rotates the robotArm to the position [degrees]
 	@OPERATION
@@ -78,7 +96,7 @@ public class ShopFloorMap extends Artifact{
 	// attaches ball in front of robot (robot now pushes it around while moving)
 	@OPERATION
 	void driverAttach(String artifactName){
-		this.ws.sendMessage("{\"" + artifactName.toLowerCase() + "\":{\"move\":true}}");
+		this.ws.sendMessage("{\"" + artifactName.toLowerCase() + "\":{\"attach\":true}}");
 	}
 
 	// releases an either loaded or attached ball
@@ -87,4 +105,27 @@ public class ShopFloorMap extends Artifact{
 		this.ws.sendMessage("{\"" + artifactName.toLowerCase() + "\":{\"release\":true}}");
 	}
 
+	@OPERATION
+	void registerToWkspSimulator(String agentName){
+		//cannot find symbol getOpUserId()
+		/*AgentId agentId = this.getOpUserId();
+		AgentRegistry.getInstance().put(agentName, agentId);*/
+	}
+
+	@INTERNAL_OPERATION
+	void deliverNotifications() {
+		while(ws.isRunning()) {
+			SimulationNotification notif = SimulationNotificationQueue.getInstance().poll();
+
+			if (notif != null) {
+				//if (notif.getAgentId() != null) {
+				
+				//	signal(notif.getAgentId(), notif.getObjDetectionMsg(), notif.getParamX(), notif.getParamY());
+					signal(notif.getObjDetectionMsg(), notif.getParamX(), notif.getParamY());
+				//}
+			} else { 
+				await_time(NOTIFICATION_DELAY);
+			}
+		}
+	}
 }
