@@ -200,6 +200,7 @@ public class WebEnvironmentArtifact extends Artifact {
       
       if (artifact.hasManual()) {
 	manualName.set(artifact.getManualName());
+	
 	protocolNames.set(artifact.getUsageProtocolNames());
 	protocolDetails.set(artifact.getUsageProtocolDetails());
       }
