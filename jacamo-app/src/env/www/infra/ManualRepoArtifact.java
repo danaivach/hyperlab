@@ -79,7 +79,7 @@ public class ManualRepoArtifact extends Artifact {
 		String body = prot.getBody();
 		String jasonPlan = "+!" + function + " : " + preconditions + " <- " + body + "." ;
 		
-		defineObsProperty("hasUsageProtocol" , name , jasonPlan);
+		defineObsProperty("hasUsageProtocol" , function , preconditions, jasonPlan);
 		
 	}	
 
