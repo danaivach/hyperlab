@@ -19,6 +19,7 @@
 	.print("Received request from ", Ag, " to load enviornment: ", EnvIRI);
 	makeArtifact("envar", "www.infra.WebEnvironmentArtifact", [EnvIRI], WebEnvArtID);
 	focusWhenAvailable("envar");
+	makeArtifact("manualRepo", "www.infra.ManualRepoArtifact");
 	+web_environment_artifact_id(WebEnvArtID);
 	getWorkspaceIRIs(WorkspaceIRIs);
 	.print("Available workspaces: ", WorkspaceIRIs);
@@ -134,16 +135,17 @@
 
 +!generateArtifactManual(ArtifactIRI, ManualId, true) : true <-
 	.print("Creating new manual for: ", ManualId);
-	getManualDetails(ArtifactIRI, ManualName , ManualContent);
-	!registerArtifactManual(ManualId, ManualName, ManualContent).
+	getManualDetails(ArtifactIRI, ManualName , ManualUse, ManualDetails);
+	!registerArtifactManual(ManualId, ManualName, ManualUse, ManualDetails).
 
 
 +!generateArtifactManual(ArtifactIRI, ArtifactClassOrName, false) : true <-
 	.print("No manual found for manual for: ", ArtifactClassOrName).
 
 
-+!registerArtifactManual(ManualId, ManualName, ManualContent) : true <-
-	.print(ManualId , " ", ManualName).
++!registerArtifactManual(ManualId, ManualName, ManualUse, ManualDetails) : true <-
+	.print(ManualId , " ", ManualName);
+	registerManual(ManualId, ManualName, ManualUse, ManualDetails).
 
 
 +!relateArtifacts(ArtIRI1, ArtIRI2) : true <-

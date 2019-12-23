@@ -1,4 +1,4 @@
-package www.infra.manuals;
+package www.infra.manual;
 
 public class UsageProtocol {
 	

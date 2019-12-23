@@ -191,8 +191,7 @@ public class WebEnvironmentArtifact extends Artifact {
   
 
   @OPERATION
-  void getManualDetails(String artifactIRIStr, OpFeedbackParam<String> manualName, OpFeedbackParam<Map<String,List<String>>> protocolDetails ){
-	
+  void getManualDetails(String artifactIRIStr, OpFeedbackParam<String> manualName, OpFeedbackParam<List<String>> protocolNames,OpFeedbackParam<List<List<String>>> protocolDetails ){
 	
     Optional<WebEntity> artifactOpt = WebEntity.fetchEntity(artifactIRIStr);
 
@@ -201,7 +200,8 @@ public class WebEnvironmentArtifact extends Artifact {
       
       if (artifact.hasManual()) {
 	manualName.set(artifact.getManualName());
-	protocolDetails.set(artifact.getUsageProtocols());
+	protocolNames.set(artifact.getUsageProtocolNames());
+	protocolDetails.set(artifact.getUsageProtocolDetails());
       }
     }
 

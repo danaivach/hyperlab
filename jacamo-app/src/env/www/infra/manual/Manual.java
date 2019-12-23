@@ -1,4 +1,4 @@
-package www.infra.manuals;
+package www.infra.manual;
 
 import java.util.List;
 
@@ -15,9 +15,17 @@ public class Manual {
 	public String getName(){
 		return name;
 	}
+	
+	public void setName(String name){
+		this.name = name;
+	}
 
 	public List<UsageProtocol> getUsageProtocols(){
 		return usageProtocols;
 
+	}
+
+	public void setUsageProtocols(List<UsageProtocol> usageProtocols){
+		this.usageProtocols = usageProtocols;
 	}
 } 

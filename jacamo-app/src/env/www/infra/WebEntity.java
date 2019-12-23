@@ -39,8 +39,8 @@ import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 import www.vocabularies.EVE;
 import www.vocabularies.TD;
 
-import www.infra.manuals.Manual;
-import www.infra.manuals.UsageProtocol;
+import www.infra.manual.Manual;
+import www.infra.manual.UsageProtocol;
 
 public class WebEntity {
   private IRI entityIRI;
@@ -306,8 +306,48 @@ public class WebEntity {
 	LOGGER.severe("Getting the usage protocols for this artifact failed due to unavailable Manual");}
 	return null;  
 }
-  
-  
+
+  public List<List<String>> getUsageProtocolDetails(){
+	List<List<String>> usageProtDetails = new ArrayList<List<String>>();
+	
+	try {
+		Manual manual = getManual();
+	
+		for (UsageProtocol protocol : manual.getUsageProtocols()){
+			List<String> details = new ArrayList<String>();
+			String name = protocol.getName();
+		
+			details.add(protocol.getFunction());
+			details.add(protocol.getPreconditions());
+			details.add(protocol.getBody());
+			usageProtDetails.add(details);
+        	}
+
+		return usageProtDetails;
+	} catch (ManualUnavailableException e) { 
+	LOGGER.severe("Getting the usage protocol details for this artifact failed due to unavailable Manual");}
+	return null;  
+  }
+
+
+  public List<String> getUsageProtocolNames(){
+	List<String> usageProtNames = new ArrayList<String>();
+	
+	try {
+		Manual manual = getManual();
+	
+		for (UsageProtocol protocol : manual.getUsageProtocols()){
+			
+			String name = protocol.getName();
+			usageProtNames.add(name);
+        	}
+
+		return usageProtNames;
+	} catch (ManualUnavailableException e) { 
+	LOGGER.severe("Getting the usage protocols names for this artifact failed due to unavailable Manual");}
+	return null;  
+  }
+
   private Manual getManual() throws ManualUnavailableException {
      Optional<Manual> eveManual = parseManual(entityGraph,entityIRI);
      if (eveManual.isPresent()){
