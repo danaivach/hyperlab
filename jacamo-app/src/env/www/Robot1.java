@@ -3,6 +3,9 @@ package www;
 import java.util.concurrent.TimeUnit;
 import java.lang.Math;
 import cartago.*;
+import java.io.*;
+import java.net.*;
+import java.util.Scanner;
 
 public class Robot1 extends Artifact {
 
@@ -35,7 +38,7 @@ public class Robot1 extends Artifact {
 
 	private void waitL(){
 		try{
-			TimeUnit.SECONDS.sleep(3);
+			TimeUnit.SECONDS.sleep(2);
 		} catch (InterruptedException e) {}
 	}
 

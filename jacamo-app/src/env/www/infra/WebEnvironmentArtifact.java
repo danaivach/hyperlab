@@ -20,10 +20,14 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 
+import java.io.*;
+import java.net.URI;
+
 import cartago.Artifact;
 import cartago.LINK;
 import cartago.OPERATION;
 import cartago.OpFeedbackParam;
+
 import www.vocabularies.EVE;
 
 public class WebEnvironmentArtifact extends Artifact {
@@ -133,16 +137,17 @@ public class WebEnvironmentArtifact extends Artifact {
   @OPERATION
   void getArtifactDetails(String artifactIRIStr, OpFeedbackParam<String> name,
       OpFeedbackParam<Boolean> isThing, OpFeedbackParam<String> className,
-      OpFeedbackParam<String[]> initParams, OpFeedbackParam<String> webSubHubIRI) {
+      OpFeedbackParam<String[]> initParams, OpFeedbackParam<Boolean> hasManual, OpFeedbackParam<String> webSubHubIRI) {
     
     Optional<WebEntity> artifactOpt = WebEntity.fetchEntity(artifactIRIStr);
-    
+
     if (artifactOpt.isPresent()) {
       WebEntity artifact = artifactOpt.get();
       
       if (artifact.getName().isPresent()) {
         name.set(artifact.getName().get());
       }
+      
       
       Optional<String> artfiactClassName = artifact.getStringObject(EVE.hasCartagoArtifact);
       
@@ -161,20 +166,48 @@ public class WebEnvironmentArtifact extends Artifact {
         } else {
           initParams.set(new String[0]);
         }
+
+	
       }
       
+      if (artifact.hasManual()){
+	hasManual.set(true);
+      } else {
+	hasManual.set(false);
+      }
+
       if (artifact.isThing()) {
         isThing.set(true);
       } else {
         isThing.set(false);
       }
       
+
       if (artifact.isMutable()) {
         webSubHubIRI.set(artifact.getSubscriptionIRI().getIRIString());
       }
     }
   }
   
+
+  @OPERATION
+  void getManualDetails(String artifactIRIStr, OpFeedbackParam<String> manualName, OpFeedbackParam<Map<String,List<String>>> protocolDetails ){
+	
+	
+    Optional<WebEntity> artifactOpt = WebEntity.fetchEntity(artifactIRIStr);
+
+    if (artifactOpt.isPresent()) {
+      WebEntity artifact = artifactOpt.get();
+      
+      if (artifact.hasManual()) {
+	manualName.set(artifact.getManualName());
+	protocolDetails.set(artifact.getUsageProtocols());
+      }
+    }
+
+  }
+
+
   @LINK
   void onNotification(Notification notification) {
     String entityIRI = notification.getEntityIRI();

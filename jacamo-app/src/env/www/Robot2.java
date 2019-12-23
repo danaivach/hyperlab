@@ -3,10 +3,15 @@ import cartago.*;
 import java.util.concurrent.TimeUnit;
 
 public class Robot2 extends Artifact {
+	
+	void init(){
+
+	defineObsProperty("hasProtocol","drive(X1,Y1,X2,Y2)", "true" , 
+		"+!drive(X1,Y1,X2,Y2) : true <- move(X1,Y1); load; move(X2,Y2); unload. ");
+	}
 
 	@OPERATION
 	void move(int x,int y){
-		waitL();
 		signal("moving",x,y);
 	}
 

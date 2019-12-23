@@ -3,19 +3,22 @@
 environment_IRI("http://localhost:8080/environments/shopfloor").
 
 
-//Item is initially free in the environment
+/* Item is initially free in the environment */
 item_free.
 
 
-//Destination set to (600,400)
+/* Destination set to (600,400) */
 destination(600,400).
 
-
-inRange(ArtifactName,X,Y)
+/* True if (X,Y) is in range of Artifact */
+in_range(ArtifactName,X,Y)
 	:- location(ArtifactName,Xr,Yr) &
 		range(ArtifactName,R) &
 		 (X-Xr)*(X-Xr) + (Y-Yr)*(Y-Yr) <= R*R.
 
+/* True if there is a plan in list P for goal G in the library. */
+in_library(G)
+	:- .print("in rule") & .relevant_plans(G,P) & .print("This is a list of relevant plans ",P) & not .empty(P).
 
 /*Initial goals */
 
@@ -53,55 +56,14 @@ inRange(ArtifactName,X,Y)
 	.print(ArtifactName, " has property range ",R).
 
 
-+!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,ThingArtifactName,WorkspaceName) &
-			hasAction(_,"http://example.com/Base")[artifact_name(_,ThingArtifactName)] &
-			hasAction(_,"http://example.com/Gripper")[artifact_name(_,ThingArtifactName)] &
-			inRange(ThingArtifactName,X1,Y1) &
-			inRange(ThingArtifactName,X2,Y2) &
-			item_free<-
-			?location(ThingArtifactName,Xr,Yr);
-			angularDisplacement(X1,Y1,Xr,Yr,D1);
-			angularDisplacement(X2,Y2,Xr,Yr,D2);
-			.print("Need Thing artifact to deliver from (",X1,",",Y1,") to (",X2,",",Y2,")");
-			!deliver(ThingArtifactName,D1,D2).
-
-			
-+!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,ThingArtifactName, WorkspaceName) &
-			artifact_available("www.Robot2",R2Name,WorkspaceName) &
-			inRange(ThingArtifactName,X2,Y2) &
-			not item_free <- 
-			?location(ThingArtifactName,X,Y);
-			?range(ThingArtifactName,R);
-			.print("Plan B : Ready to deliver with artifact ", R2Name, " from (",X1,",",Y1,") to (",500,",",300,")");
-			move(500,400)[artifact_name(R2Name)];
-			unload[artifact_name(R2Name)];
-			+item_free;
-			-+item_position(500,400).
++!pickAndPlace(ArtifactName, D1,D2) :  true <-
+	rotate(D1)[artifact_name(ArtifactName)];
+	grasp[artifact_name(ArtifactName)];
+	rotate(D2)[artifact_name(ArtifactName)];
+	release[artifact_name(ArtifactName)].
 
 
-+!deliver(X1,Y1,X2,Y2) : item_free & 
-			artifact_available("www.Robot1",R1Name,WorkspaceName) &
-			artifact_available("www.Robot2",R2Name,WorkspaceName) &
-			inRange(R1Name,X1,Y1) & 
-			.relevant_plans({+!pickAndPlace(D1,D2)},P1)<- 
-			.print("Plan A: Ready to deliver with artifact ", R1Name, " from (",X1,",",Y1,") to (",X1,",",Y2,")");
-			?location(R1Name,Xr,Yr);
-			?range(R1Name,R);
-			angularDisplacement(X1,Y1,Xr,Yr,D1);
-			angularDisplacement(X2,Y2,Xr,Yr,D2);
-			lineCircleCloseIntersection(X2,Y2,Xr,Yr,R,Xi,Yi);
-			move(300,400)[artifact_name(R2Name)];
-			rotate(D1)[artifact_name(R1Name)];
-			grasp[artifact_name(R1Name)];
-			rotate(D2)[artifact_name(R1Name)];
-			release[artifact_name(R1Name)];
-			load[artifact_name(R2Name)];
-			-item_free;
-			-+item_position(300,400).
-
-+!pickAndPlace(D1,D2) : true <- .print("nothin").
-
-+!deliver(ThingArtifactName,D1,D2): true <-
++!pickAndPlace(ThingArtifactName,D1,D2,D3): true <-
 			.print("Plan C: Deliver with Thing artifact ", D1, D2, ThingArtifactName);
 			//TODO: These will be events from the Thing Artifact
 			+rotating(ThingArtifactName,D1);
@@ -110,6 +72,55 @@ inRange(ArtifactName,X,Y)
 			+releasing(ThingArtifactName);
 			//act("http://example.com/Base",[["http://example.com/Value", 512]])[artifact_name(ThingArtifact)];
 			-+item_position(X2,Y2).
+
+/*
++!drive(X1,Y1,X2,Y2) : true <- 
+	move(X1,Y1);
+	load;
+	move(X2,Y2);
+	unload.
+*/
+
++!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,ThingArtifactName,WorkspaceName) &
+			hasAction(_,"http://example.com/Base")[artifact_name(_,ThingArtifactName)] &
+			hasAction(_,"http://example.com/Gripper")[artifact_name(_,ThingArtifactName)] &
+			in_range(ThingArtifactName,X1,Y1) &
+			in_range(ThingArtifactName,X2,Y2) <-
+			?location(ThingArtifactName,Xr,Yr);
+			angularDisplacement(X1,Y1,Xr,Yr,D1);
+			angularDisplacement(X2,Y2,Xr,Yr,D2);
+			.print("Need Thing artifact to deliver from (",X1,",",Y1,") to (",X2,",",Y2,")");
+			!pickAndPlace(ThingArtifactName,D1,D2,512).
+
+
++!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot1",R1Name,WorkspaceName) &
+			artifact_available("www.Robot2",R2Name,WorkspaceName) &
+			in_range(R1Name,X1,Y1)  &
+			not in_range(R1Name,X2,Y2) &
+			in_library({+!drive(X1,Y1,X2,Y2)})  <- 
+			.print("Plan A: Ready to deliver with artifact ", R1Name, " from (",X1,",",Y1,") to (",X1,",",Y2,")");
+			?location(R1Name,Xr,Yr);
+			?range(R1Name,R);
+			angularDisplacement(X1,Y1,Xr,Yr,D1);
+			angularDisplacement(X2,Y2,Xr,Yr,D2);
+			lineCircleCloseIntersection(X2,Y2,Xr,Yr,R,Xi,Yi);
+			!pickAndPlace(R1Name,D1,D2);
+			!drive(300,400,500,400);
+			-+item_position(500,400).
+
+
+-!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot1",R1Name,WorkspaceName) &
+			artifact_available("www.Robot2",R2Name,WorkspaceName) &
+			in_range(R1Name,X1,Y1)  &
+			not in_range(R1Name,X2,Y2) <-
+			!consultManual("drive(X1,Y1,X2,Y2)",R2Name);
+			!deliver(X1,Y1,X2,Y2).
+
+
++!consultManual(Goal,ArtifactName) :  
+		hasProtocol(Goal,_,Content)
+		 <- .print("ConsultingManual");
+		    .add_plan(Content).
 
 
 +artifact_available("www.Robot1",ArtifactName,WorkspaceName) : true <-

@@ -45,55 +45,62 @@
 +!buildArtifacts(WorkspaceName, []) : true .
 
 +!buildArtifacts(WorkspaceName, [ArtifactIRI | T]) : true <-
-	getArtifactDetails(ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, WebSubHubIRI);
+	getArtifactDetails(ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, HasManual, WebSubHubIRI);
 	.print("[Artifact: ", ArtifactIRI, "] Name: ", ArtifactName, ", class name: ", ArtifactClassName, ", init params: ", InitParams, ", web sub hub IRI: ", WebSubHubIRI);
-	!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, WebSubHubIRI);
+	!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, HasManual, WebSubHubIRI);
 	!buildArtifacts(WorkspaceName, T).
 
 
 
 +artifact_created(WorkspaceName, ArtifactIRI) : true <-
 	.print("New artifact created in workspace ", WorkspaceName, ": ", ArtifactIRI);
-	getArtifactDetails(ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, WebSubHubIRI);
+	getArtifactDetails(ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, HasManual, WebSubHubIRI);
 	.print("[Artifact: ", ArtifactIRI, "] Name: ", ArtifactName, ", class name: ", ArtifactClassName, ", init params: ", InitParams, ", web sub hub IRI: ", WebSubHubIRI);
-	!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, WebSubHubIRI).
+	!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, HasManual, WebSubHubIRI).
 	
 
 +!generateNewArtifact(ArtifactIRI) : true <-
 	.print("Creating new artifact: ", ArtifactIRI);
-	getArtifactDetails(ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, WebSubHubIRI);
-	!makeArtifact(main, ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, WebSubHubIRI).
+	getArtifactDetails(ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, HasManual, WebSubHubIRI);
+	!makeArtifact(main, ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, HasManual, WebSubHubIRI).
 
 
-
-+!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, true, _, _, WebSubHubIRI)
++!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, true, _, _, HasManual, WebSubHubIRI)
 	: .ground([WorkspaceName, ArtifactIRI, ArtifactName, WebSubHubIRI])
 	<-
 	.print("Got a thing artifact with a WebSubIRI!");
 	!createThingArtifact(WorkspaceName, ArtifactName, ArtifactIRI, ArtID);
 	registerArtifactForNotifications(ArtifactIRI, ArtID, WebSubHubIRI);
+	!generateArtifactManual(ArtifactIRI,ArtifactName,HasManual);
 	.print("Subscribed artifact ", ArtifactName, " for notifications! ", WebSubHubIRI).
 
-+!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, true, _, _, WebSubHubIRI)
+
++!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, true, _, _, HasManual, WebSubHubIRI)
 	: .ground([WorkspaceName, ArtifactIRI, ArtifactName])
 	<-
 	.print("Got a thing artifact without a WebSubIRI!");
-	!createThingArtifact(WorkspaceName, ArtifactName, ArtifactIRI, ArtID).
+	!createThingArtifact(WorkspaceName, ArtifactName, ArtifactIRI, ArtID);
+	!generateArtifactManual(ArtifactIRI,ArtifactName,HasManual).
 
-+!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, false, ArtifactClassName, InitParams, WebSubHubIRI)
+
++!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, false, ArtifactClassName, InitParams, HasManual, WebSubHubIRI)
 	: .ground([WorkspaceName, ArtifactIRI, ArtifactName, ArtifactClassName, InitParams, WebSubHubIRI])
 	<-
 	.print("Got an artifact with a WebSubIRI!");
 	!createCartagoArtifact(WorkspaceName, ArtifactName, ArtifactClassName, InitParams, ArtID);
 	registerArtifactForNotifications(ArtifactIRI, ArtID, WebSubHubIRI);
+	!generateArtifactManual(ArtifactIRI,ArtifactClassName,HasManual);
 	.print("Subscribed artifact ", ArtifactName, " for notifications! ", WebSubHubIRI).
 
-+!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, false, ArtifactClassName, InitParams, WebSubHubIRI)
+
++!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, false, ArtifactClassName, InitParams, HasManual, WebSubHubIRI)
 	: .ground([WorkspaceName, ArtifactIRI, ArtifactName, ArtifactClassName, InitParams])
 	<-
-	!createCartagoArtifact(WorkspaceName, ArtifactName, ArtifactClassName, InitParams, ArtID).
+	!createCartagoArtifact(WorkspaceName, ArtifactName, ArtifactClassName, InitParams, ArtID);
+	!generateArtifactManual(ArtifactIRI,ArtifactClassName,HasManual).
 
-+!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, WebSubHubIRI) : true <-
+
++!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, HasManual, WebSubHubIRI) : true <-
 	.print("Discovered an artifact I cannot create: ", ArtifactIRI).
 
 
@@ -102,14 +109,43 @@
 	makeArtifact(ArtifactName, "www.ThingArtifact", [ArtifactIRI], ArtID);
 	+artifact_details(ArtifactIRI, ArtifactName, ArtID);
 	.broadcast(tell, thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName)).
+
 	
++!createThingArtifact(WorkspaceName, ArtifactName, ArtifactIRI, ArtID) : true <-
+	-print("Creating Thing Artifact");
+	makeArtifact(ArtifactName, "www.ThingArtifact", [ArtifactIRI], ArtID);
+	+artifact_details(ArtifactIRI, ArtifactName, ArtID);
+	.broadcast(tell, thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName)).
+
 	
 +!createCartagoArtifact(WorkspaceName, ArtifactName, ArtifactClassName, InitParams, ArtID) : true <-
 	.print("Creating Cartago Artifact");
 	makeArtifact(ArtifactName, ArtifactClassName, InitParams, ArtID);
 	+artifact_details(ArtifactIRI, ArtifactName, ArtifactClassName, ArtID);
 	.broadcast(tell, artifact_available(ArtifactClassName, ArtifactName, WorkspaceName)).
-	
+
+
++!createCartagoArtifact(WorkspaceName, ArtifactName, ArtifactClassName, InitParams, ArtID) : true <-
+	.print("Creating Cartago Artifact");
+	makeArtifact(ArtifactName, ArtifactClassName, InitParams, ArtID);
+	+artifact_details(ArtifactIRI, ArtifactName, ArtifactClassName, ArtID);
+	.broadcast(tell, artifact_available(ArtifactClassName, ArtifactName, WorkspaceName)).
+
+
++!generateArtifactManual(ArtifactIRI, ManualId, true) : true <-
+	.print("Creating new manual for: ", ManualId);
+	getManualDetails(ArtifactIRI, ManualName , ManualContent);
+	!registerArtifactManual(ManualId, ManualName, ManualContent).
+
+
++!generateArtifactManual(ArtifactIRI, ArtifactClassOrName, false) : true <-
+	.print("No manual found for manual for: ", ArtifactClassOrName).
+
+
++!registerArtifactManual(ManualId, ManualName, ManualContent) : true <-
+	.print(ManualId , " ", ManualName).
+
+
 +!relateArtifacts(ArtIRI1, ArtIRI2) : true <-
 	//requestArtifactRelation(ArtIRI1, ArtIRI2);
 	.print("Relate Artifacts").

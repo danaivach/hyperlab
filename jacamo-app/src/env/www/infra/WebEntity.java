@@ -6,13 +6,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.commons.rdf.api.Graph;
 import org.apache.commons.rdf.api.IRI;
 import org.apache.commons.rdf.api.Literal;
 import org.apache.commons.rdf.api.RDF;
+import org.apache.commons.rdf.api.RDFTerm;
 import org.apache.commons.rdf.api.RDFSyntax;
 import org.apache.commons.rdf.api.Triple;
+import org.apache.commons.rdf.api.BlankNodeOrIRI;
 import org.apache.commons.rdf.rdf4j.RDF4J;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -33,6 +38,9 @@ import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 
 import www.vocabularies.EVE;
 import www.vocabularies.TD;
+
+import www.infra.manuals.Manual;
+import www.infra.manuals.UsageProtocol;
 
 public class WebEntity {
   private IRI entityIRI;
@@ -68,6 +76,11 @@ public class WebEntity {
     return entityGraph.stream(entityIRI, isA, TD.Thing).findAny().isPresent();
   }
   
+  public boolean hasManual() {
+     Optional<BlankNodeOrIRI> eveManualName = getBlankNodeOrIRIObject(entityIRI, EVE.hasManual);
+     return eveManualName.isPresent();
+  }
+
   public Optional<String> getName() {
     Optional<String> eveName = getStringObject(entityIRI, EVE.hasName);
     
@@ -77,7 +90,8 @@ public class WebEntity {
     
     return getStringObject(entityIRI, TD.name);
   }
-  
+
+
   public List<IRI> getMembers() {
     return entityGraph.stream(entityIRI, EVE.contains, null)
                         .map(Triple::getObject)
@@ -85,7 +99,7 @@ public class WebEntity {
                         .map(obj -> (IRI) obj)
                         .collect(Collectors.toList());
   }
-  
+    
   public Optional<IRI> getIRIObject(IRI subject, IRI predicate) {
     return entityGraph.stream(subject, predicate, null)
                         .map(Triple::getObject)
@@ -94,8 +108,20 @@ public class WebEntity {
                         .findFirst();
   }
   
+  public Optional<BlankNodeOrIRI> getBlankNodeOrIRIObject(IRI subject, IRI predicate) {
+    return entityGraph.stream(subject, predicate, null)
+                        .map(Triple::getObject)
+                        .filter(obj -> obj instanceof BlankNodeOrIRI)
+                        .map(obj -> (BlankNodeOrIRI) obj)
+                        .findFirst();
+  }
+  
   public Optional<IRI> getIRIObject(IRI predicate) {
     return getIRIObject(entityIRI, predicate);
+  }
+
+  public Optional<BlankNodeOrIRI> getBlankNodeOrIRIObject(IRI predicate){
+	return getBlankNodeOrIRIObject(entityIRI,predicate);
   }
   
   public Optional<String> getStringObject(IRI subject, IRI predicate) {
@@ -181,4 +207,141 @@ public class WebEntity {
     
     return (new RDF4J()).asGraph(model);
   }
+
+   
+  private static Optional<Manual> parseManual(Graph graph, IRI entityIRI) {
+		
+	Optional<BlankNodeOrIRI> optManualNode = graph.stream(entityIRI, EVE.hasManual, null)
+                        .map(Triple::getObject)
+                        .filter(obj -> obj instanceof BlankNodeOrIRI)
+                        .map(obj -> (BlankNodeOrIRI) obj)
+                        .findFirst();
+	
+	BlankNodeOrIRI manualNode = optManualNode.get();
+	
+	Optional<Literal> name = getFirstObjectAsLiteral(graph, manualNode, EVE.hasName);
+	
+	Optional<String> manualName = (name.isPresent()) ? Optional.of(name.get().getLexicalForm()) : Optional.empty();
+	
+	List<UsageProtocol> usageProtocols = getUsageProtocolsForManual(graph, manualNode);
+
+	return Optional.of(new Manual(manualName.get(), usageProtocols));
+		
+  }  
+
+  private static List<UsageProtocol> getUsageProtocolsForManual(Graph graph, BlankNodeOrIRI manualIRI){
+	List<UsageProtocol> usageProtocols = new ArrayList<UsageProtocol>();
+
+        List<BlankNodeOrIRI> usageProtocolNodes = graph.stream(manualIRI,EVE.hasUsageProtocol,null)
+					.filter(triple -> triple.getObject() instanceof BlankNodeOrIRI)
+					.map(triple -> (BlankNodeOrIRI) triple.getObject())
+					.collect(Collectors.toList());
+
+	usageProtocolNodes.forEach(protNode -> {
+		UsageProtocol usageProtocol = parseUsageProtocol(graph, protNode);
+		if (usageProtocol != null){
+			usageProtocols.add(usageProtocol);
+		}
+	});
+
+	return usageProtocols;
+  }
+
+  private static UsageProtocol parseUsageProtocol(Graph graph , BlankNodeOrIRI protNode) {
+	Optional<Literal> nameLit = getFirstObjectAsLiteral(graph,protNode,EVE.hasName);
+	Optional<String> name = (nameLit.isPresent()) ? Optional.of(nameLit.get().getLexicalForm()) : Optional.empty();
+
+	Optional<Literal> functionLit = getFirstObjectAsLiteral(graph,protNode,EVE.hasFunction);
+	Optional<String> function = (functionLit.isPresent()) ? Optional.of(functionLit.get().getLexicalForm()) : Optional.empty();
+	
+	Optional<Literal> precondLit = getFirstObjectAsLiteral(graph,protNode,EVE.hasPrecondition);
+	Optional<String> precond = (precondLit.isPresent()) ? Optional.of(precondLit.get().getLexicalForm()) : Optional.empty();
+	
+	Optional<Literal> bodyLit = getFirstObjectAsLiteral(graph,protNode,EVE.hasBody);
+	Optional<String> body = (bodyLit.isPresent()) ? Optional.of(bodyLit.get().getLexicalForm()) : Optional.empty();
+
+	if(!name.isPresent()){
+		LOGGER.severe("Malformed usage protocol: No name found for this protocol.");
+		return null;
+	}
+ 	else if (!function.isPresent() || !precond.isPresent() || !body.isPresent()){
+		LOGGER.severe("Malformed usage protocol: Malformed or missing semantics for protocol " + name);	
+		return null;
+	} 
+	
+	return new UsageProtocol(name.get(),function.get(),precond.get(),body.get());
+  }
+
+  
+  public String getManualName(){
+    try{
+	Manual manual = getManual();
+	
+	return manual.getName();
+
+    }catch(ManualUnavailableException e){
+	LOGGER.severe("Getting the Manual name for this artifact failed due to unavailable Manual");}
+    return null;
+  }
+    
+
+  public Map<String,List<String>> getUsageProtocols(){
+	Map<String,List<String>> usageProtocols = new HashMap<String,List<String>>();
+	
+	try {
+		Manual manual = getManual();
+	
+		for (UsageProtocol protocol : manual.getUsageProtocols()){
+			List<String> details = new ArrayList<String>();
+			String name = protocol.getName();
+		
+			details.add(protocol.getFunction());
+			details.add(protocol.getPreconditions());
+			details.add(protocol.getBody());
+			usageProtocols.put(name,details);
+        	}
+
+		return usageProtocols;
+	} catch (ManualUnavailableException e) { 
+	LOGGER.severe("Getting the usage protocols for this artifact failed due to unavailable Manual");}
+	return null;  
+}
+  
+  
+  private Manual getManual() throws ManualUnavailableException {
+     Optional<Manual> eveManual = parseManual(entityGraph,entityIRI);
+     if (eveManual.isPresent()){
+	return eveManual.get();
+     }
+     else throw new ManualUnavailableException();
+  }
+
+  
+  
+  private static Optional<Literal> getFirstObjectAsLiteral(Graph graph, BlankNodeOrIRI subject, IRI propertyIRI){
+	Optional<RDFTerm> term = getFirstObject(graph,subject,propertyIRI);
+	
+	if(term.isPresent() && term.get() instanceof Literal) {
+		return Optional.of((Literal) term.get());
+	}
+
+	return Optional.empty();
+  }   
+
+  private static Optional<RDFTerm> getFirstObject(Graph graph, BlankNodeOrIRI subject, IRI propertyIRI){
+
+	if (!graph.contains(subject,propertyIRI, null)){
+		return Optional.empty();
+	}
+	RDFTerm object = graph.stream(subject,propertyIRI,null).findFirst().get().getObject();
+	return Optional.of(object);
+
+  }
+
+  class ManualUnavailableException extends Exception {
+	public ManualUnavailableException(){
+  		super("There is no available manual for this artifact");
+  	}
+  }
+
 }
