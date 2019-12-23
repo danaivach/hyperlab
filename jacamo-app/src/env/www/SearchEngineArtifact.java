@@ -3,6 +3,8 @@ package www;
 import java.util.List;
 import java.util.ArrayList;
 
+package www;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -50,7 +52,7 @@ public class SearchEngineArtifact extends Artifact {
             HttpClient client = HttpClientBuilder.create().build();
             HttpResponse response = client.execute(request);
             String resultString = EntityUtils.toString(response.getEntity());
-	    log("HttpResponse: " + response);
+
             log("Response[" + response.getStatusLine().getStatusCode() + ": " + resultString);
             // assuming only 1 artifact returned
             if (resultString.trim().length() > 0) {
