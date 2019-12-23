@@ -4,4 +4,5 @@
     a eve:Workspace;
     eve:hasName "interactionsWksp";
     eve:contains <http://localhost:8080/artifacts/robot1>;
-    eve:contains <http://localhost:8080/artifacts/robot2>.
+    eve:contains <http://localhost:8080/artifacts/robot2>;
+    eve:contains <http://localhost:8080/artifacts/robot3>.
