@@ -4,8 +4,8 @@ environment_IRI("http://localhost:8080/environments/shopfloor").
 //interactionsWkspIRI("http://localhost:8080/workspaces/interactionsWksp").
 
 search_engine_URI("http://localhost:9090/searchEngine").
-crawler_URI("http://localhost:9090.crawler").
-
+crawler_URI("http://localhost:9090/crawler").
+has_manual_link("{'link': 'http://w3id.org/eve#hasManual'}").
 
 /* Destination set to (600,400) */
 destination(600,400).
@@ -36,12 +36,14 @@ in_library(G)
 +!start : environment_IRI(EnvIRI) <-
 	.print("Hello WWWorld. This is Transporter 1.0! Let's see if I can help in the environment: ",EnvIRI);
 	.wait(1000);
-	.send(node_manager, achieve, environment_loaded(EnvIRI)).
-	//!setUpSearchEngine.	
+	.send(node_manager, achieve, environment_loaded(EnvIRI));
+	!setUpSearchEngine.
 
 
 +environment_loaded(EnvIRI, WorkspacesNames) : true <-
-	.print("Environment loaded: ", EnvIRI).
+	.print("Environment loaded: ", EnvIRI);
+	.wait(3000).
+//	!findAndConsultManual("identified","identified").
 
 
 +item_position(X1,Y1): destination(X2,Y2) &
@@ -77,12 +79,11 @@ in_library(G)
 +!pickAndPlace(ThingArtifactName,D1,D2,D3): true <-
 	.print("Plan: Deliver with Thing artifact ",ThingArtifactName);
 	//TODO: These will be events from the Thing Artifact
-	+rotating(ThingArtifactName,D1);
-	+grasping(ThingArtifactName);
-	+rotating(ThingArtifactName,D2);
-	+releasing(ThingArtifactName);
-	//act("http://example.com/Base",[["http://example.com/Value", 512]])[artifact_name(ThingArtifact)];
-	-+item_position(X2,Y2).
+	-+rotating(ThingArtifactName,D1);
+	-+grasping(ThingArtifactName);
+	-+rotating(ThingArtifactName,D2);
+	-+releasing(ThingArtifactName).
+	//act("http://example.com/Base",[["http://example.com/Value", 512]])[artifact_name(ThingArtifact)].
 
 +!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,ThingArtifactName,WorkspaceName) &
 	hasAction(_,"http://example.com/Base")[artifact_name(_,ThingArtifactName)] &
@@ -93,7 +94,8 @@ in_library(G)
 	angularDisplacement(X1,Y1,Xr,Yr,D1);
 	angularDisplacement(X2,Y2,Xr,Yr,D2);
 	.print("Need Thing artifact to deliver from (",X1,",",Y1,") to (",X2,",",Y2,")");
-	!pickAndPlace(ThingArtifactName,D1,D2,512).
+	!pickAndPlace(ThingArtifactName,D1,D2,512);
+	-+item_position(X2,Y2).
 
 
 +!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot1",R1Name,WorkspaceName) &
@@ -147,7 +149,9 @@ in_library(G)
 	?environment_IRI(IIRI);
 	makeArtifact("se", "www.SearchEngineArtifact", [SearchEngineURI], SE);
 	makeArtifact("ce", "www.CrawlerEngineArtifact", [CrawlerURI] , CE);
-	addSeed("http://localhost:8080/workspaces/wk1")[CE];
+	addSeed("http://localhost:8080/workspaces/interactionsWksp")[CE];
+//	?has_manual_link(HasManual);
+//	registerLink()[CE];
 	+search_engine_available(SE,CE).
  
 +artifact_available("www.Robot1",ArtifactName,WorkspaceName) : true <-
@@ -178,7 +182,6 @@ in_library(G)
 +rotating(D) : true <-
 	.print("Received signal: Robot1 rotating ", D, " degrees");
 	robotArmRotate("robot1",D)[artifact_name(floorMap)].
-//	terminalText("test text").
 
 +grasping : true <- 
 	.print("Received signal: Robot1 grasping");
