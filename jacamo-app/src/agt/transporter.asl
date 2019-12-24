@@ -36,8 +36,8 @@ in_library(G)
 +!start : environment_IRI(EnvIRI) <-
 	.print("Hello WWWorld. This is Transporter 1.0! Let's see if I can help in the environment: ",EnvIRI);
 	.wait(1000);
-	.send(node_manager, achieve, environment_loaded(EnvIRI));
-	!setUpSearchEngine.	
+	.send(node_manager, achieve, environment_loaded(EnvIRI)).
+	//!setUpSearchEngine.	
 
 
 +environment_loaded(EnvIRI, WorkspacesNames) : true <-
@@ -112,10 +112,11 @@ in_library(G)
 	!drive(300,400,500,400);
 	-+item_position(500,400).
 
-+!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot2",R2Name,WorkspaceName) <-
-	!push(X1-5,Y1-10,500,400);
+/*
++!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot2",R2Name,WorkspaceName)
+ <-	!push(X1-5,Y1-10,500,400);
 	-+item_position(500,400).
-
+*/
 
 -!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot1",R1Name,WorkspaceName) &
 	artifact_available("www.Robot2",R2Name,WorkspaceName) &
@@ -177,6 +178,7 @@ in_library(G)
 +rotating(D) : true <-
 	.print("Received signal: Robot1 rotating ", D, " degrees");
 	robotArmRotate("robot1",D)[artifact_name(floorMap)].
+//	terminalText("test text").
 
 +grasping : true <- 
 	.print("Received signal: Robot1 grasping");
