@@ -3,8 +3,6 @@ package www;
 import java.util.List;
 import java.util.ArrayList;
 
-package www;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
