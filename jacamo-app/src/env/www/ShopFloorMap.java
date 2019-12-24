@@ -33,7 +33,7 @@ public class ShopFloorMap extends Artifact{
 
 	void init() {
 		this.ws = new WebsocketClientEndpoint(URI.create("ws://localhost:40510"));
-		
+
 		execInternalOp("deliverNotifications");
 
 		// add listener
@@ -49,8 +49,8 @@ public class ShopFloorMap extends Artifact{
 							int x = jo.getInt("x");
 							int y = jo.getInt("y");
 							System.out.println("Received request to placeObject at x: " + String.valueOf(x) + " / y:" + String.valueOf(y));
-							
-							//AgentId receiverId = AgentRegistry.getInstance().get("transporter1"); 
+
+							//AgentId receiverId = AgentRegistry.getInstance().get("transporter1");
 							SimulationNotificationQueue.getInstance().add(new SimulationNotification("transporter1","item_position",x,y));
 						}
 					}
@@ -61,7 +61,7 @@ public class ShopFloorMap extends Artifact{
 		});
 
 	}
-		
+
 
 	// rotates the robotArm to the position [degrees]
 	@OPERATION
@@ -112,6 +112,11 @@ public class ShopFloorMap extends Artifact{
 		AgentRegistry.getInstance().put(agentName, agentId);*/
 	}
 
+	@OPERATION
+	void logMessage(String origin, String message){
+		this.ws.sendMessage("{\"terminal\": {\"origin\":" + origin + ", \"message\": \"" + message + "\"}}");
+	}
+
 	@INTERNAL_OPERATION
 	void deliverNotifications() {
 		while(ws.isRunning()) {
@@ -119,11 +124,11 @@ public class ShopFloorMap extends Artifact{
 
 			if (notif != null) {
 				//if (notif.getAgentId() != null) {
-				
+
 				//	signal(notif.getAgentId(), notif.getObjDetectionMsg(), notif.getParamX(), notif.getParamY());
 					signal(notif.getObjDetectionMsg(), notif.getParamX(), notif.getParamY());
 				//}
-			} else { 
+			} else {
 				await_time(NOTIFICATION_DELAY);
 			}
 		}
