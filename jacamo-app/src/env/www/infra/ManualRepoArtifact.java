@@ -22,7 +22,8 @@ public class ManualRepoArtifact extends Artifact {
 	void init(){
 		this.manuals = new HashMap<String,Manual>();
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	@OPERATION
 	void registerManual(String artifactId, String manualName, Object protNamesOb, Object protDetailsOb){
 		//hashmap does not comply
