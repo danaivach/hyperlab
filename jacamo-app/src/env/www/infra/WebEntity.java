@@ -76,9 +76,23 @@ public class WebEntity {
     return entityGraph.stream(entityIRI, isA, TD.Thing).findAny().isPresent();
   }
   
+  
+  public boolean isManual() {
+    IRI isA = (new RDF4J()).createIRI(org.eclipse.rdf4j.model.vocabulary.RDF.TYPE.stringValue());
+    return entityGraph.stream(entityIRI, isA, EVE.Manual).findAny().isPresent();
+  }
+
   public boolean hasManual() {
-     Optional<BlankNodeOrIRI> eveManualName = getBlankNodeOrIRIObject(entityIRI, EVE.hasManual);
-     return eveManualName.isPresent();
+     Optional<BlankNodeOrIRI> eveManualNode = getBlankNodeOrIRIObject(entityIRI, EVE.hasManual);
+     //the manual is only valid if it has a cartago-compiant name
+     if (eveManualNode.isPresent()){
+         
+    	 Optional<Literal> eveManualName = getFirstObjectAsLiteral(entityGraph, eveManualNode.get(), EVE.hasName);
+    	 return  eveManualName.isPresent();
+     }
+     else {
+	return false;
+     }
   }
 
   public Optional<String> getName() {
@@ -209,16 +223,33 @@ public class WebEntity {
   }
 
    
-  private static Optional<Manual> parseManual(Graph graph, IRI entityIRI) {
-		
+  private static Optional<Manual> parseManualForArtifact(Graph graph, IRI entityIRI) {
+	
+	
 	Optional<BlankNodeOrIRI> optManualNode = graph.stream(entityIRI, EVE.hasManual, null)
                         .map(Triple::getObject)
                         .filter(obj -> obj instanceof BlankNodeOrIRI)
                         .map(obj -> (BlankNodeOrIRI) obj)
                         .findFirst();
+
+	BlankNodeOrIRI manualNode = optManualNode.get();	
 	
-	BlankNodeOrIRI manualNode = optManualNode.get();
+	Optional<Literal> name = getFirstObjectAsLiteral(graph, manualNode, EVE.hasName);
 	
+	Optional<String> manualName = (name.isPresent()) ? Optional.of(name.get().getLexicalForm()) : Optional.empty();
+	
+	List<UsageProtocol> usageProtocols = getUsageProtocolsForManual(graph, manualNode);
+
+	return Optional.of(new Manual(manualName.get(), usageProtocols));
+		
+  }  
+
+
+  private static Optional<Manual> parseManual(Graph graph, IRI entityIRI) {
+	
+	
+	BlankNodeOrIRI manualNode = (BlankNodeOrIRI) entityIRI;
+		
 	Optional<Literal> name = getFirstObjectAsLiteral(graph, manualNode, EVE.hasName);
 	
 	Optional<String> manualName = (name.isPresent()) ? Optional.of(name.get().getLexicalForm()) : Optional.empty();
@@ -236,7 +267,7 @@ public class WebEntity {
 					.filter(triple -> triple.getObject() instanceof BlankNodeOrIRI)
 					.map(triple -> (BlankNodeOrIRI) triple.getObject())
 					.collect(Collectors.toList());
-
+	
 	usageProtocolNodes.forEach(protNode -> {
 		UsageProtocol usageProtocol = parseUsageProtocol(graph, protNode);
 		if (usageProtocol != null){
@@ -250,7 +281,7 @@ public class WebEntity {
   private static UsageProtocol parseUsageProtocol(Graph graph , BlankNodeOrIRI protNode) {
 	Optional<Literal> nameLit = getFirstObjectAsLiteral(graph,protNode,EVE.hasName);
 	Optional<String> name = (nameLit.isPresent()) ? Optional.of(nameLit.get().getLexicalForm()) : Optional.empty();
-
+	
 	Optional<Literal> functionLit = getFirstObjectAsLiteral(graph,protNode,EVE.hasFunction);
 	Optional<String> function = (functionLit.isPresent()) ? Optional.of(functionLit.get().getLexicalForm()) : Optional.empty();
 	
@@ -259,7 +290,7 @@ public class WebEntity {
 	
 	Optional<Literal> bodyLit = getFirstObjectAsLiteral(graph,protNode,EVE.hasBody);
 	Optional<String> body = (bodyLit.isPresent()) ? Optional.of(bodyLit.get().getLexicalForm()) : Optional.empty();
-
+	
 	if(!name.isPresent()){
 		LOGGER.severe("Malformed usage protocol: No name found for this protocol.");
 		return null;
@@ -349,7 +380,13 @@ public class WebEntity {
   }
 
   private Manual getManual() throws ManualUnavailableException {
-     Optional<Manual> eveManual = parseManual(entityGraph,entityIRI);
+     Optional<Manual> eveManual;
+     if (isManual()) {
+     	eveManual = parseManual(entityGraph,entityIRI);
+     }
+     else {
+	eveManual = parseManualForArtifact(entityGraph,entityIRI);
+     }
      if (eveManual.isPresent()){
 	return eveManual.get();
      }

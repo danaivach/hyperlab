@@ -140,7 +140,7 @@ public class WebEnvironmentArtifact extends Artifact {
       OpFeedbackParam<String[]> initParams, OpFeedbackParam<Boolean> hasManual, OpFeedbackParam<String> webSubHubIRI) {
     
     Optional<WebEntity> artifactOpt = WebEntity.fetchEntity(artifactIRIStr);
-
+    //TODO check if entity is artifavt
     if (artifactOpt.isPresent()) {
       WebEntity artifact = artifactOpt.get();
       
@@ -191,18 +191,18 @@ public class WebEnvironmentArtifact extends Artifact {
   
 
   @OPERATION
-  void getManualDetails(String artifactIRIStr, OpFeedbackParam<String> manualName, OpFeedbackParam<List<String>> protocolNames,OpFeedbackParam<List<List<String>>> protocolDetails ){
+  void getManualDetails(String entityIRIStr, OpFeedbackParam<String> manualName, OpFeedbackParam<List<String>> protocolNames,OpFeedbackParam<List<List<String>>> protocolDetails ){
 	
-    Optional<WebEntity> artifactOpt = WebEntity.fetchEntity(artifactIRIStr);
-
-    if (artifactOpt.isPresent()) {
-      WebEntity artifact = artifactOpt.get();
+    Optional<WebEntity> entityOpt = WebEntity.fetchEntity(entityIRIStr);
+    
+    if (entityOpt.isPresent()) {
+      WebEntity entity = entityOpt.get();
       
-      if (artifact.hasManual()) {
-	manualName.set(artifact.getManualName());
-	
-	protocolNames.set(artifact.getUsageProtocolNames());
-	protocolDetails.set(artifact.getUsageProtocolDetails());
+      if (entity.hasManual() || entity.isManual()) {
+	manualName.set(entity.getManualName());
+	System.out.println(entity.getManualName());	
+	protocolNames.set(entity.getUsageProtocolNames());
+	protocolDetails.set(entity.getUsageProtocolDetails());
       }
     }
 
