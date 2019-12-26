@@ -1,11 +1,12 @@
 /* Initial beliefs and rules */
 
 environment_IRI("http://localhost:8080/environments/shopfloor").
-//interactionsWkspIRI("http://localhost:8080/workspaces/interactionsWksp").
 
 search_engine_URI("http://localhost:9090/searchEngine").
 crawler_URI("http://localhost:9090/crawler").
-has_manual_link("{'link': 'http://w3id.org/eve#hasManual'}").
+crawl_env_resources("{'link': 'http://w3id.org/eve#contains'}").
+crawl_explains("{'link': 'http://w3id.org/eve#explains'}").
+
 
 /* Destination set to (600,400) */
 destination(600,400).
@@ -34,7 +35,7 @@ in_library(G)
 /* Move item from its position to a destination */
 
 +!start : environment_IRI(EnvIRI) <-
-	.print("Hello WWWorld. This is Transporter 1.0! Let's see if I can help in the environment: ",EnvIRI);
+	.print("Hello WWWorld. This is Transporter 2.5! Let's see if I can help in the environment: ",EnvIRI);
 	.wait(1000);
 	.send(node_manager, achieve, environment_loaded(EnvIRI));
 	!setUpSearchEngine.
@@ -43,7 +44,7 @@ in_library(G)
 +environment_loaded(EnvIRI, WorkspacesNames) : true <-
 	.print("Environment loaded: ", EnvIRI);
 	.wait(3000).
-//	!findAndConsultManual("identified","identified").
+	//!findAndConsultManual("id","Robot3").
 
 
 +item_position(X1,Y1): destination(X2,Y2) &
@@ -75,15 +76,16 @@ in_library(G)
 	rotate(D2)[artifact_name(ArtifactName)];
 	release[artifact_name(ArtifactName)].
 
-
-+!pickAndPlace(ThingArtifactName,D1,D2,D3): true <-
-	.print("Plan: Deliver with Thing artifact ",ThingArtifactName);
+/*
++!pickAndPlace(D1,D2): true <-
+	.print("Plan: Deliver with Thing artifact ","Robot3");
 	//TODO: These will be events from the Thing Artifact
-	-+rotating(ThingArtifactName,D1);
-	-+grasping(ThingArtifactName);
-	-+rotating(ThingArtifactName,D2);
-	-+releasing(ThingArtifactName).
+	-+rotating("Robot3",D1);
+	-+grasping("Robot3");
+	-+rotating("Robot3",D2);
+	-+releasing("Robot3").
 	//act("http://example.com/Base",[["http://example.com/Value", 512]])[artifact_name(ThingArtifact)].
+*/
 
 +!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,ThingArtifactName,WorkspaceName) &
 	hasAction(_,"http://example.com/Base")[artifact_name(_,ThingArtifactName)] &
@@ -94,7 +96,7 @@ in_library(G)
 	angularDisplacement(X1,Y1,Xr,Yr,D1);
 	angularDisplacement(X2,Y2,Xr,Yr,D2);
 	.print("Need Thing artifact to deliver from (",X1,",",Y1,") to (",X2,",",Y2,")");
-	!pickAndPlace(ThingArtifactName,D1,D2,512);
+	!pickAndPlace(D1,D2);
 	-+item_position(X2,Y2).
 
 
@@ -102,7 +104,7 @@ in_library(G)
 	artifact_available("www.Robot2",R2Name,WorkspaceName) &
 	in_range(R1Name,X1,Y1)  &
 	not in_range(R1Name,X2,Y2) &
-	in_library({+!drive(X1,Y1,X2,Y2)})  <- 
+	in_library({+!drive(X1,Y1,X2,Y2)})   <- 
 	.print("Ready to deliver with artifact ", R1Name);
 	?location(R1Name,Xr,Yr);
 	?range(R1Name,R);
@@ -120,7 +122,7 @@ in_library(G)
 	-+item_position(500,400).
 */
 
--!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot1",R1Name,WorkspaceName) &
+-!deliver(X1,Y1,X2,Y2) : artifact_available(_,ArtifactName,WorkspaceName) &
 	artifact_available("www.Robot2",R2Name,WorkspaceName) &
 	in_range(R1Name,X1,Y1)  &
 	not in_range(R1Name,X2,Y2) <-
@@ -128,32 +130,58 @@ in_library(G)
 	!deliver(X1,Y1,X2,Y2).
 
 
-+!findAndConsultManual(Goal,ArtifactName) :  hasUsageProtocol(_,_,Content) <-
-	.print("Found an applicable plan for goal ", Goal, " in the manual of ", ArtifactName);
+-!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,ThingArtifactName,WorkspaceName) &
+	hasAction(_,"http://example.com/Base")[artifact_name(_,ThingArtifactName)] &
+	hasAction(_,"http://example.com/Gripper")[artifact_name(_,ThingArtifactName)] &
+	in_range(ThingArtifactName,X1,Y1) &
+	in_range(ThingArtifactName,X2,Y2) <-
+	!findAndConsultManual("pickAndPlace(D1,D2)",ThingArtifactName);
+	!deliver(X1,Y1,X2,Y2).
+
+
++!findAndConsultManual(Goal,ArtifactName) :  artifact_available(ArtifactClass,ArtifactName,_) &
+	hasUsageProtocol(Goal,_,Content,ArtifactClass) <-
+	.print("Found an applicable plan for goal ", Goal, " in the manual of class ", ArtifactName);
 	.add_plan(Content);
 	.print("A new plan is added in the plan library").
 
 
-/*
-+!findAndConsultManual(Goal,ArtifactName) : search_engine_available(SearchEngineId,CrawlerId) <-
-	searchArtifact("eve: <http://w3id.org/eve#>","","eve:isRobot", "", SubjectResult, PredicateResult, ObjectResult)[SE];
-	.print("found robot ", SubjectResult).
++!findAndConsultManual(Goal,ArtifactName) : thing_artifact_available(_,ArtifactName,_) &
+	hasUsageProtocol(Goal,_,Content,ArtifactName) <-
+	.print("Found an applicable plan for goal ", Goal, " in the manual of thing ", ArtifactName);
+	.add_plan(Content);
+	.print("A new plan is added in the plan library: ",Content).
+
+
++!findAndConsultManual(Goal,ArtifactName) : search_engine_available <-
+	!feedEnvironmentResources;
+	?crawl_explains(ExplainsLink);
+	registerLink(ExplainsLink)[CE];
+	.wait(10000);
+	?thing_artifact_available(ArtifactIRI, ArtifactName , _);
+	.concat("<",ArtifactIRI,">",ArtifactIRIAcute);
+	searchArtifactResource("eve: <http://w3id.org/eve#>","","eve:explains", ArtifactIRIAcute, SubjectResult, PredicateResult, ObjectResult)[SE];
+	.print("Discovered a manual: ", SubjectResult, " that explains " , ObjectResult);
+	.send(node_manager, achieve, generateArtifactManual(SubjectResult, ArtifactName, true));
+	.wait(3000).
 
 -!findAndConsultManual(Goal,ArtifactName) : search_engine_available(SearchEngineId,CrawlerId) <-
 	.wait(3000);
 	!findAndConsultManual("","").
-*/
+
 
 +!setUpSearchEngine : search_engine_URI(SearchEngineURI) &
 	crawler_URI(CrawlerURI) <-
-	?environment_IRI(IIRI);
 	makeArtifact("se", "www.SearchEngineArtifact", [SearchEngineURI], SE);
 	makeArtifact("ce", "www.CrawlerEngineArtifact", [CrawlerURI] , CE);
-	addSeed("http://localhost:8080/workspaces/interactionsWksp")[CE];
-//	?has_manual_link(HasManual);
-//	registerLink()[CE];
-	+search_engine_available(SE,CE).
- 
+	+search_engine_available.
+
++!feedEnvironmentResources : search_engine_available <-
+	?environment_IRI(EnvIRI);
+	addSeed(EnvIRI)[CE];
+	?crawl_env_resources(ContainsLink);
+	registerLink(ContainsLink)[CE].
+	  
 +artifact_available("www.Robot1",ArtifactName,WorkspaceName) : true <-
 	.print("An artifact is available: ", ArtifactName, " in ", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);
@@ -224,19 +252,6 @@ in_library(G)
 	robotArmRelease(ThingArtifactName)[artifact_name(floorMap)].
 
 
-/*
-
-//Plans Type B
-
-+!consultArtifactManual(G) : artifact_available(_,ArtifactName,WorkSpace)
-			& artifact_manual_available(_,ArtifactName, Manual)
-
-//not like that but
-+!consultArtifactManual : thing_artifact_available(_,ArtifactName,WorkspaceName)
-			& hasProperty(_,"cartago:Manual")[artifact_name(_,ArtifactName)]
-		        & hasUsageProtocol(_,"cartago:")[artifact_name(_,ArtifactName)]
-	<-
-*/
 
 { include("$jacamoJar/templates/common-cartago.asl")}
 { include("$jacamoJar/templates/common-moise.asl")}

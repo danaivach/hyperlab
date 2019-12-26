@@ -119,19 +119,19 @@
 	.broadcast(tell, artifact_available(ArtifactClassName, ArtifactName, WorkspaceName)).
 
 
-+!generateArtifactManual(ArtifactIRI, ManualId, true) : true <-
-	.print("Creating new manual for: ", ManualId);
-	getManualDetails(ArtifactIRI, ManualName , ManualUse, ManualDetails);
-	!registerArtifactManual(ManualId, ManualName, ManualUse, ManualDetails).
++!generateArtifactManual(EntityIRI, ArtifactClassOrName, true) : true <-
+	.print("Creating new manual for: ", ArtifactClassOrName);
+	getManualDetails(EntityIRI, ManualName , ManualUse, UseDetails);
+	!registerArtifactManual(ArtifactClassOrName, ManualName, ManualUse, UseDetails).
 
 
 +!generateArtifactManual(ArtifactIRI, ArtifactClassOrName, false) : true <-
 	.print("No manual found for the artifact: ", ArtifactClassOrName).
 
 
-+!registerArtifactManual(ManualId, ManualName, ManualUse, ManualDetails) : true <-
-	.print("Found a manual for the artifact ",ManualId , ". Available usage protocols: ", ManualName);
-	registerManual(ManualId, ManualName, ManualUse, ManualDetails).
++!registerArtifactManual(ArtifactClassOrName, ManualName, ManualUse, ManualDetails) : true <-
+	.print("Found a manual for the artifact ", ArtifactClassOrName , ". Available usage protocols: ", ManualName);
+	registerManual(ArtifactClassOrName, ManualName, ManualUse, ManualDetails).
 
 
 +!relateArtifacts(ArtIRI1, ArtIRI2) : true <-
