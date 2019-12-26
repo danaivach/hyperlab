@@ -65,7 +65,7 @@ public class ManualRepoArtifact extends Artifact {
 			Manual m = new Manual(manualName,protocols);
 			manuals.put(artifactId,m);		
 		}
-		updateProtocolPerception(prot);
+		updateProtocolPerception(artifactId,prot);
 	}
 
 
@@ -73,14 +73,14 @@ public class ManualRepoArtifact extends Artifact {
 		return manuals.containsKey(artifactId);
 	}
 
-	private void updateProtocolPerception(UsageProtocol prot){
+	private void updateProtocolPerception(String artifactId, UsageProtocol prot){
 		String name = prot.getName();
 		String function = prot.getFunction();
 		String preconditions = prot.getPreconditions();
 		String body = prot.getBody();
 		String jasonPlan = "+!" + function + " : " + preconditions + " <- " + body + "." ;
-		
-		defineObsProperty("hasUsageProtocol" , function , preconditions, jasonPlan);
+		System.out.println("protocol id" +artifactId);
+		defineObsProperty("hasUsageProtocol" , function , preconditions, jasonPlan, artifactId);
 		
 	}	
 
