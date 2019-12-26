@@ -16,7 +16,8 @@ public class EVE {
   public static final IRI Environment   = createIRI("Environment");
   public static final IRI Workspace     = createIRI("Workspace");
   public static final IRI Artifact      = createIRI("Artifact");
-  
+  public static final IRI Manual        = createIRI("Manual");
+
   public static final IRI contains              = createIRI("contains");
   public static final IRI hasName               = createIRI("hasName");
   public static final IRI hasCartagoArtifact    = createIRI("hasCartagoArtifact");
@@ -26,6 +27,7 @@ public class EVE {
   public static final IRI hasFunction           = createIRI("hasFunction");
   public static final IRI hasPrecondition       = createIRI("hasPrecondition");
   public static final IRI hasBody               = createIRI("hasBody");
-  
+  public static final IRI explains              = createIRI("explains");  
+
   public static final IRI usesWebSubHub         = createIRI("usesWebSubHub");
 }
