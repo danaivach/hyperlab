@@ -1,28 +1,18 @@
 package www;
 
 import cartago.Artifact;
-import cartago.AgentId;
 import cartago.OPERATION;
 import cartago.INTERNAL_OPERATION;
 
 import www.infra.WebsocketClientEndpoint;
 import www.infra.SimulationNotification;
 import www.infra.SimulationNotificationQueue;
-import www.infra.AgentRegistry;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONObject;
 import org.json.JSONException;
 
-import java.util.AbstractQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ShopFloorMap extends Artifact{
 
