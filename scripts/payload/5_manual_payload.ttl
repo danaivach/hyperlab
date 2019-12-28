@@ -1,0 +1,18 @@
+@prefix eve: <http://w3id.org/eve#> .
+
+<http://localhost:8080/manuals/phantomXmanual> a eve:Manual ;
+		eve:hasName "phantomXmanual" ;
+		eve:explains <http://localhost:8080/artifacts/robot3> ;
+		eve:hasUsageProtocol [ 
+			eve:hasName "deliver" ;
+			eve:hasFunction "pickAndPlace(D1,D2)" ;
+			eve:hasPrecondition "true" ;
+			eve:hasBody " .print(\" \");
+							//act(\"http://example.com/Base\",[[\"http://example.com/Value\", D1]];
+							//act(\"http://example.com/Shoulder\",[[\"http://example.com/Value\", 560]];
+							//act(\"http://example.com/Gripper\",[[\"http://example.com/Value\", 500]]
+							-+rotating(\"Robot3\",D1);
+							-+grasping(\"Robot3\");
+							-+rotating(\"Robot3\",D2);
+							-+releasing(\"Robot3\") "
+		] .
