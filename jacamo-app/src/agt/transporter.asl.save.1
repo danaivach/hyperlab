@@ -22,7 +22,8 @@ in_range(ArtifactName,X,Y)
 /* True if there is a plan in list P for goal G in the library. */
 in_library(G)
 	:- .relevant_plans(G,P) & 
-	not .empty(P).
+	not .empty(P) & 
+	.print("A relevant plan is in the plan library: ", G).
 
 
 /*Initial goals */
@@ -34,28 +35,25 @@ in_library(G)
 /* Move item from its position to a destination */
 
 +!start : environment_IRI(EnvIRI) <-
-	logMessage("","[Transporter1]","Hello WWWorld. This is Transporter1.0! Let's see if I can help in the environment:",EnvIRI);
+	.print("Hello WWWorld. This is Transporter 2.5! Let's see if I can help in the environment: ",EnvIRI);
 	.wait(1000);
 	.send(node_manager, achieve, environment_loaded(EnvIRI));
-	logMessage("","[Transporter1]","Loading environment...");
 	!setUpSearchEngine.
 
 
 +environment_loaded(EnvIRI, WorkspacesNames) : true <-
-	logMessage("","[Transporter1]","Environment loaded:", EnvIRI);
-	logMessage("","------------------------------------------------------------------");
-	logMessage("","[Transporter1]","Place an item on the map and I will transfer it at (600,400)").
-	
-+destination(X,Y) : true <- logMessage("","Transporter1]","Destination set to (",X,",",Y,")").
-  
+	.print("Environment loaded: ", EnvIRI);
+	.wait(3000).
+	//!findAndConsultManual("id","Robot3").
+
+
 +item_position(X1,Y1): destination(X2,Y2) &
 	X1=X2 & Y1=Y2 <-
-	logMessage("Item reached its destination! You can try again.").
+	.print("Item is in its destination").
 
 
-+item_position(X1,Y1): destination(X2,Y2) <- 
++item_position(X1,Y1): destination(X2,Y2) <-
 	.print("Item in location (",X1,",",Y1,")");
-	logMessage("Item in position (",X1,",",Y1,")");
 	!deliver(X1,Y1,X2,Y2).
 
 
@@ -79,13 +77,13 @@ in_library(G)
 	release[artifact_name(ArtifactName)].
 
 /*
-+!pickAndPlace(D1,D2): true <-
-	.print("Plan: Deliver with Thing artifact ","Robot3");
++!pickAndPlace(ThingArtifactName,D1,D2,D3): true <-
+	.print("Plan: Deliver with Thing artifact ",ThingArtifactName);
 	//TODO: These will be events from the Thing Artifact
-	-+rotating("Robot3",D1);
-	-+grasping("Robot3");
-	-+rotating("Robot3",D2);
-	-+releasing("Robot3").
+	-+rotating(ThingArtifactName,D1);
+	-+grasping(ThingArtifactName);
+	-+rotating(ThingArtifactName,D2);
+	-+releasing(ThingArtifactName).
 	//act("http://example.com/Base",[["http://example.com/Value", 512]])[artifact_name(ThingArtifact)].
 */
 
@@ -94,36 +92,28 @@ in_library(G)
 	hasAction(_,"http://example.com/Gripper")[artifact_name(_,ThingArtifactName)] &
 	in_range(ThingArtifactName,X1,Y1) &
 	in_range(ThingArtifactName,X2,Y2) <-
-	.print("Need Thing artifact to deliver from (",X1,",",Y1,") to (",X2,",",Y2,")");
 	?location(ThingArtifactName,Xr,Yr);
 	angularDisplacement(X1,Y1,Xr,Yr,D1);
 	angularDisplacement(X2,Y2,Xr,Yr,D2);
-	!ensure_plan(pickAndPlace(D1,D2),ThingArtifactName);
-	.print("Ready to deliber with", ThingArtifactName);
-	!pickAndPlace(D1,D2);
+	.print("Need Thing artifact to deliver from (",X1,",",Y1,") to (",X2,",",Y2,")");
+	!pickAndPlace(ThingArtifactName,D1,D2,512);
 	-+item_position(X2,Y2).
 
 
-+!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot1",R1Name,_) &
-	artifact_available("www.Robot2",R2Name,_) &
-	thing_artifact_available(_,R3Name,_) & 
++!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot1",R1Name,WorkspaceName) &
+	artifact_available("www.Robot2",R2Name,WorkspaceName) &
 	in_range(R1Name,X1,Y1)  &
-	in_range(R3Name,X2,Y2)   <-
-	logMessage("", "[Transporter1]","I will need plans for artifacts ",R1Name,", ",R2Name, " and the driver artifact ",R2Name);
-	!ensure_plan("pickAndPlace(ArtifactName,D1,D2)",R1Name);
-	!ensure_plan("drive(X1,Y1,X2,Y2)",R2Name);
-	?location(R1Name,Xr1,Yr1);
-	?location(R3Name,Xr3,Yr3);
-	?range(R1Name,R1);
-	?range(R3Name,R3);
-	angularDisplacement(X1,Y1,Xr1,Yr1,D1);
-	angularDisplacement(X2,Y2,Xr1,Yr1,D2);
-	lineCircleCloseIntersection(X2,Y2,Xr1,Yr1,R1,Xi1,Yi1);
-	lineCircleCloseIntersection(Xi1,Yi1,Xr3,Yr3,R3,Xi3,Yi3);
-	logMessage("","[Transporter1]","Ready to deliver with artifact ", R1Name);
+	not in_range(R1Name,X2,Y2) &
+	in_library({+!drive(X1,Y1,X2,Y2)})   <- 
+	.print("Ready to deliver with artifact ", R1Name);
+	?location(R1Name,Xr,Yr);
+	?range(R1Name,R);
+	angularDisplacement(X1,Y1,Xr,Yr,D1);
+	angularDisplacement(X2,Y2,Xr,Yr,D2);
+	lineCircleCloseIntersection(X2,Y2,Xr,Yr,R,Xi,Yi);
 	!pickAndPlace(R1Name,D1,D2);
-	logMessage("","[Transporter1]","Ready to deliver with artifact ", R2Name);
-	!drive(Xi1,Yi1,Xi3,Yi3);
+	.print("Ready to deliver with artifact ", R2Name);
+	!drive(300,400,500,400);
 	-+item_position(500,400).
 
 /*
@@ -132,64 +122,68 @@ in_library(G)
 	-+item_position(500,400).
 */
 
-+!ensure_plan(Goal,ArtifactName) :.term2string(G,Goal) & .print(G) & in_library({+!G}) <-
-	.print("Plan library contains an available plan for goal :", Goal).
+-!deliver(X1,Y1,X2,Y2) : artifact_available(_,ArtifactName,WorkspaceName) &
+	artifact_available("www.Robot2",R2Name,WorkspaceName) &
+	in_range(R1Name,X1,Y1)  &
+	not in_range(R1Name,X2,Y2) <-
+	!findAndConsultManual("drive(X1,Y1,X2,Y2)",R2Name);
+	!deliver(X1,Y1,X2,Y2).
 
 
-+!ensure_plan(Goal,ArtifactName) : artifact_available("www.infra.ManualRepoArtifact",_,_) <-
-	.print("No plan in the library for goal ", Goal);
-	.print("Let's find and consult the Manual of ", ArtifactName);		
-	!findAndConsultManual(Goal,ArtifactName).
+-!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,ThingArtifactName,WorkspaceName) &
+	hasAction(_,"http://example.com/Base")[artifact_name(_,ThingArtifactName)] &
+	hasAction(_,"http://example.com/Gripper")[artifact_name(_,ThingArtifactName)] &
+	in_range(ThingArtifactName,X1,Y1) &
+	in_range(ThingArtifactName,X2,Y2) <-
+	!findAndConsultManual("drive(X1,Y1,X2,Y2)",ThingArtifactName);
+	!deliver(X1,Y1,X2,Y2).
 
 
 +!findAndConsultManual(Goal,ArtifactName) :  artifact_available(ArtifactClass,ArtifactName,_) &
 	hasUsageProtocol(Goal,_,Content,ArtifactClass) <-
-	.print("[Transporter1] Found an applicable plan for goal ", Goal, " in the manual of class ", ArtifactName);
+	.print("Found an applicable plan for goal ", Goal, " in the manual of class ", ArtifactName);
 	.add_plan(Content);
 	.print("A new plan is added in the plan library").
 
 
 +!findAndConsultManual(Goal,ArtifactName) : thing_artifact_available(_,ArtifactName,_) &
 	hasUsageProtocol(Goal,_,Content,ArtifactName) <-
-	.print("[Transporter1] Found an applicable plan for goal ", Goal, " in the manual of class ", ArtifactName);
+	.print("Found an applicable plan for goal ", Goal, " in the manual of thing ", ArtifactName);
 	.add_plan(Content);
-	.print("A new plan is added in the plan library: ").
-	
+	.print("A new plan is added in the plan library").
+
 
 +!findAndConsultManual(Goal,ArtifactName) : search_engine_available <-
+	!feedEnvironmentResources;
+	?crawl_explains(ExplainsLink);
+	registerLink(ExplainsLink)[CE];
+	.wait(10000);
 	?thing_artifact_available(ArtifactIRI, ArtifactName , _);
 	.concat("<",ArtifactIRI,">",ArtifactIRIAcute);
 	searchArtifactResource("eve: <http://w3id.org/eve#>","","eve:explains", ArtifactIRIAcute, SubjectResult, PredicateResult, ObjectResult)[SE];
-	.print("[Transporter1] I discovered a manual: ", Goal, " that explains " , ObjectResult);
-	.send(node_manager, achieve, generateArtifactManual(SubjectResult, ArtifactName, true));
+	.print("Discovered a manual: ", SubjectResult, " that explains " , ObjectResult);
+       "drive(X1,Y1,X2,Y2)",R2Name);
+	!deliver(X1,Y1,X2,Y2).	generateArtifactManual(SubjectResult, ArtifactName, true).
+
+-!findAndConsultManual(Goal,ArtifactName) : search_engine_available(SearchEngineId,CrawlerId) <-
 	.wait(3000);
-	?hasUsageProtocol(_,"true",Content,ArtifactName);
-	.add_plan(Content);
-	.print("A new plan is added in the plan library: ").	
-
--!ensure_plan(Goal,ArtifactName) : true <-
-	!askHuman(Goal,ArtifactName);
-	.wait(10000).
-
-+!askHuman(Goal,Artifact) : true <-
-	.print("Need some help with goal: ").
+	!findAndConsultManual("","").
 
 
 +!setUpSearchEngine : search_engine_URI(SearchEngineURI) &
 	crawler_URI(CrawlerURI) <-
 	makeArtifact("se", "www.SearchEngineArtifact", [SearchEngineURI], SE);
 	makeArtifact("ce", "www.CrawlerEngineArtifact", [CrawlerURI] , CE);
+	+search_engine_available.
+
++!feedEnvironmentResources : search_engine_available <-
 	?environment_IRI(EnvIRI);
 	addSeed(EnvIRI)[CE];
 	?crawl_env_resources(ContainsLink);
-	registerLink(ContainsLink)[CE];
-	?crawl_explains(ExplainsLink);
-	registerLink(ExplainsLink)[CE];
-	+search_engine_available.
-
-  
+	registerLink(ContainsLink)[CE].
+	  
 +artifact_available("www.Robot1",ArtifactName,WorkspaceName) : true <-
-	logMessage("","[Transporter1]","An artifact is available:", ArtifactName, "in", WorkspaceName);
+	.print("An artifact is available: ", ArtifactName, " in ", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);
 	focusWhenAvailable(ArtifactName);
 	?location(X,Y);
@@ -198,13 +192,13 @@ in_library(G)
 	+range(ArtifactName,R).
 
 +artifact_available(_,ArtifactName,WorkspaceName) : true <-
-	logMessage("","[Transporter1]","An artifact is available:", ArtifactName, "in", WorkspaceName);
+	.print("An artifact is available: ", ArtifactName, " in ", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);
 	focusWhenAvailable(ArtifactName).
 	
 
 +thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName) : true <-
-  	logMessage("","[Transporter1]","A thing artifact is available:" , ArtifactIRI, "in workspace:", WorkspaceName);
+  	.print("A thing artifact is available: " , ArtifactIRI, " in workspace: ", WorkspaceName);
   	joinWorkspace(WorkspaceName, WorkspaceArtId);
 	focusWhenAvailable(ArtifactName);
 	+location(ArtifactName,550,400);

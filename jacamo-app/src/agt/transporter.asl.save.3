@@ -21,7 +21,7 @@ in_range(ArtifactName,X,Y)
 
 /* True if there is a plan in list P for goal G in the library. */
 in_library(G)
-	:- .relevant_plans(G,P) & 
+	:- .print("a goal ",G) & .relevant_plans(G,P) & 
 	not .empty(P).
 
 
@@ -109,9 +109,11 @@ in_library(G)
 	thing_artifact_available(_,R3Name,_) & 
 	in_range(R1Name,X1,Y1)  &
 	in_range(R3Name,X2,Y2)   <-
+	
+	.print("this is ", X);
 	logMessage("", "[Transporter1]","I will need plans for artifacts ",R1Name,", ",R2Name, " and the driver artifact ",R2Name);
-	!ensure_plan("pickAndPlace(ArtifactName,D1,D2)",R1Name);
-	!ensure_plan("drive(X1,Y1,X2,Y2)",R2Name);
+	//!ensure_plan(pickAndPlace(ArtifactName,D1,D2),_,R1Name);
+	!ensure_plan("drive(X1,Y1,Y2,X2)",R2Name);
 	?location(R1Name,Xr1,Yr1);
 	?location(R3Name,Xr3,Yr3);
 	?range(R1Name,R1);
@@ -132,9 +134,9 @@ in_library(G)
 	-+item_position(500,400).
 */
 
-+!ensure_plan(Goal,ArtifactName) :.term2string(G,Goal) & .print(G) & in_library({+!G}) <-
++!ensure_plan(Goal,ArtifactName) :  in_library({+!Goal}) <- 
+	
 	.print("Plan library contains an available plan for goal :", Goal).
-
 
 +!ensure_plan(Goal,ArtifactName) : artifact_available("www.infra.ManualRepoArtifact",_,_) <-
 	.print("No plan in the library for goal ", Goal);
@@ -153,7 +155,7 @@ in_library(G)
 	hasUsageProtocol(Goal,_,Content,ArtifactName) <-
 	.print("[Transporter1] Found an applicable plan for goal ", Goal, " in the manual of class ", ArtifactName);
 	.add_plan(Content);
-	.print("A new plan is added in the plan library: ").
+	.print("A new plan is added in the plan library: ",Content).
 	
 
 +!findAndConsultManual(Goal,ArtifactName) : search_engine_available <-
@@ -165,7 +167,9 @@ in_library(G)
 	.wait(3000);
 	?hasUsageProtocol(_,"true",Content,ArtifactName);
 	.add_plan(Content);
-	.print("A new plan is added in the plan library: ").	
+	.print("A new plan is added in the plan library: ",Content).	
+
++hasUsageProtocol(G,Con,U,Art) : true <- .print("==========================================================nice content here",G,Con,U,Art).
 
 -!ensure_plan(Goal,ArtifactName) : true <-
 	!askHuman(Goal,ArtifactName);
@@ -186,8 +190,7 @@ in_library(G)
 	?crawl_explains(ExplainsLink);
 	registerLink(ExplainsLink)[CE];
 	+search_engine_available.
-
-  
+	  
 +artifact_available("www.Robot1",ArtifactName,WorkspaceName) : true <-
 	logMessage("","[Transporter1]","An artifact is available:", ArtifactName, "in", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);

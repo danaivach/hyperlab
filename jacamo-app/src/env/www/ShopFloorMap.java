@@ -106,15 +106,20 @@ public class ShopFloorMap extends Artifact{
 	}
 
 	@OPERATION
+	void logMessage(String origin, Object... args){
+		String message = "hello";
+		origin = "";
+		for (Object obj : args){
+			origin += (String.valueOf(obj)) + " ";
+		}
+		this.ws.sendMessage("{\"terminal\": {\"origin\":\"" + origin + "\", \"message\": \"" + message + "\"}}");
+	}
+
+	@OPERATION
 	void registerToWkspSimulator(String agentName){
 		//cannot find symbol getOpUserId()
 		/*AgentId agentId = this.getOpUserId();
 		AgentRegistry.getInstance().put(agentName, agentId);*/
-	}
-
-	@OPERATION
-	void logMessage(String origin, String message){
-		this.ws.sendMessage("{\"terminal\": {\"origin\":" + origin + ", \"message\": \"" + message + "\"}}");
 	}
 
 	@INTERNAL_OPERATION
