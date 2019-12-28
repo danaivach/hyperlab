@@ -42,4 +42,4 @@ curl -i -X POST \
   http://localhost:8080/manuals/ \
   -H 'content-type: text/turtle' \
   -H 'slug: phantomXmanual' \
-  -d '@payload/5_manual_payload.ttl'
+  -d '@payload/5_manual_ofRobot3_payload.ttl'
