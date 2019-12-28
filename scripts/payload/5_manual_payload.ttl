@@ -7,12 +7,5 @@
 			eve:hasName "deliver" ;
 			eve:hasFunction "pickAndPlace(D1,D2)" ;
 			eve:hasPrecondition "true" ;
-			eve:hasBody " .print(\" \");
-							//act(\"http://example.com/Base\",[[\"http://example.com/Value\", D1]];
-							//act(\"http://example.com/Shoulder\",[[\"http://example.com/Value\", 560]];
-							//act(\"http://example.com/Gripper\",[[\"http://example.com/Value\", 500]]
-							-+rotating(\"Robot3\",D1);
-							-+grasping(\"Robot3\");
-							-+rotating(\"Robot3\",D2);
-							-+releasing(\"Robot3\") "
+			eve:hasBody " -+rotating(\"Robot3\",D1); -+grasping(\"Robot3\"); -+rotating(\"Robot3\",D2); -+releasing(\"Robot3\") "
 		] .
