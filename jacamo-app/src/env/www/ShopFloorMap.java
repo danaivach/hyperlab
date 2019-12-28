@@ -42,6 +42,9 @@ public class ShopFloorMap extends Artifact{
 
 							//AgentId receiverId = AgentRegistry.getInstance().get("transporter1");
 							SimulationNotificationQueue.getInstance().add(new SimulationNotification("transporter1","item_position",x,y));
+						} else if (jo.has("changeArtifact")) {
+							jo = (JSONObject) jo.get("changeArtifact");
+							System.out.println("Received request to change artifact " + jo.getString("name") + " enabled: " + jo.getBoolean("enabled"));
 						}
 					}
 				} catch(JSONException e) {
