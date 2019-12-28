@@ -97,7 +97,7 @@ public class ShopFloorMap extends Artifact{
 
 	@OPERATION
 	void logMessage(String origin, Object... args){
-		String message = "hello";
+		String message = "";
 		origin = "";
 		for (Object obj : args){
 			origin += (String.valueOf(obj)) + " ";
