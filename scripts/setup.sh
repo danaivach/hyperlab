@@ -36,3 +36,10 @@ curl -i -X POST \
   -H 'content-type: text/turtle' \
   -H 'slug: robot3' \
   -d '@payload/4_robot3_payload.ttl'
+  
+  echo -e '\n\nCreating manual ...'
+curl -i -X POST \
+  http://localhost:8080/manuals/ \
+  -H 'content-type: text/turtle' \
+  -H 'slug: phantomXmanual' \
+  -d '@payload/5_manual_payload.ttl'
