@@ -14,7 +14,8 @@
 
 mas playground2.0 {
 
-    agent node_manager: node_manager.asl 
+    agent node_manager: node_manager.asl
+    agent transporter2: transporter2.0.asl 
     agent transporter1: transporter.asl{
 	focus: www.calculator
 	focus: www.floorMap

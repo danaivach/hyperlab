@@ -34,9 +34,9 @@ public class Robot2 extends Artifact {
 	}
 
 	@OPERATION
-	void detatch(){
+	void detach(){
 		waitL();
-		signal("detatching");
+		signal("detaching");
 	}
 	
 	private void waitL(){

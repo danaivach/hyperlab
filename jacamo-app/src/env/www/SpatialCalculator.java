@@ -25,12 +25,20 @@ public class SpatialCalculator extends Artifact {
 		double m = (y-yr)/(x-xr);
 		double d = y - m*x;
 		//discriminant
-		double dis = r*r*(m*m + 1) - Math.pow((yr - m*xr - d),2);
+		double f=r*r*(m*m + 1);
+		double g=Math.pow((yr - m*xr - d),2);
+		double dis = 0;
+		if(f>g){
+			dis = f-g;
+		} else {
+			dis = g-f;
+		}
 		//intersection points
 		double xI1 = (xr + yr*m - d*m + Math.sqrt(dis))/(m*m + 1);
 		double xI2 = (xr + yr*m - d*m - Math.sqrt(dis))/(m*m + 1);
 		double yI1 = m*xI1 + d;
 		double yI2 = m*xI2 + d;
+		
 		//closest intersection point
 		if (distance(x,y,xI1,yI1) <= distance(x,y,xI2,yI2)) {
 			xi.set((int) xI1);

@@ -66,12 +66,14 @@ in_library(G)
 +range(ArtifactName,R) :true <-
 	.print(ArtifactName, " has property range ",R).
 
+/*
 +!push(X1,Y1,X2,Y2) : true <-
 	move(X1,Y1);
 	attach;
 	move(X2,Y2);
 	release.
 
+*/
 +!pickAndPlace(ArtifactName, D1,D2) :  true <-
 	rotate(D1)[artifact_name(ArtifactName)];
 	grasp[artifact_name(ArtifactName)];
@@ -124,13 +126,20 @@ in_library(G)
 	!pickAndPlace(R1Name,D1,D2);
 	logMessage("Transporter1","Ready to deliver with artifact ", R2Name);
 	!drive(Xi1,Yi1,Xi3,Yi3);
+	-+item_position(Xi3,Yi3).
+
+
++!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot2",R2Name,WorkspaceName)&
+	thing_artifact_available(_,R3Name,_)
+ <-	logMessage("Transporter1","I will need a plan for the driver artifact ",R2Name);
+	?location(R3Name,Xr3,Yr3);
+	?range(R3Name,R3);
+	.print("range ",R3);
+	!ensure_plan("push(X1,Y1,X2,Y2)",R2Name);
+	lineCircleCloseIntersection(X1,Y1,Xr3,Yr3,R3,Xi3,Yi3);
+	!push(X1-5,Y1-10,Xi3,Yi3);
 	-+item_position(500,400).
 
-/*
-+!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot2",R2Name,WorkspaceName)
- <-	!push(X1-5,Y1-10,500,400);
-	-+item_position(500,400).
-*/
 
 +!ensure_plan(Goal,ArtifactName) :.term2string(G,Goal) & .print(G) & in_library({+!G}) <-
 	.print("Plan library contains an available plan for goal :", Goal).
@@ -167,13 +176,19 @@ in_library(G)
 	.add_plan(Content);
 	.print("A new plan is added in the plan library: ").
 
--!ensure_plan(Goal,ArtifactName) : true <-
-	!askHuman(Goal,ArtifactName);
-	.wait(10000).
+-!findAndConsultManual(Goal,ArtifactName) : true <-
+	.print("No plan found in the environment for goal: ", Goal);
+	!askAgent(Goal).
+	
 
-+!askHuman(Goal,Artifact) : true <-
-	.print("Need some help with goal: ").
-
++!askAgent(Goal) : true <-
+	.print("Hi Transporter 2.0. Do you have any plans for the goal: ", Goal,"?");
+	.concat("+!",Goal,AchievementGoal);
+	.send(transporter2,askHow,AchievementGoal);
+	logMessage("Transporter2","There is a plan for you for goal: ", Goal).
+	
+-!ensurePlan(Goal,Artifact) : artifact_available("www.infra.ManualRepoArtifact",_,_) <-
+	.print("I looked at my plan library, search for artifact manuals and asked other agents. No plan was found for delivering the item. Hopefully, a new artifact or manual will be added in the environment. Please try again!"). 
 
 +!setUpSearchEngine : search_engine_URI(SearchEngineURI) &
 	crawler_URI(CrawlerURI) <-
