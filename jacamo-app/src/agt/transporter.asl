@@ -189,7 +189,7 @@ in_library(G)
 
 
 +artifact_available("www.Robot1",ArtifactName,WorkspaceName) : true <-
-	logMessage("Transporter1","An artifact is available:", ArtifactName, "in", WorkspaceName);
+	logMessage("Transporter1","An artifact is available:", ArtifactName, "in workspace: ", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);
 	focusWhenAvailable(ArtifactName);
 	?location(X,Y);
@@ -198,7 +198,7 @@ in_library(G)
 	+range(ArtifactName,R).
 
 +artifact_available(_,ArtifactName,WorkspaceName) : true <-
-	logMessage("Transporter1","An artifact is available:", ArtifactName, "in", WorkspaceName);
+	logMessage("Transporter1","An artifact is available:", ArtifactName, "in workspace: ", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);
 	focusWhenAvailable(ArtifactName).
 
@@ -213,49 +213,62 @@ in_library(G)
 
 +hasAction(_,_): true <- .print("Action detected").
 
+//Plans for using the GUI artifact: ShopFloorMap
 +rotating(D) : true <-
 	.print("Received signal: Robot1 rotating ", D, " degrees");
-	robotArmRotate("robot1",D)[artifact_name(floorMap)].
+	robotArmRotate("robot1",D)[artifact_name(floorMap)];
+	logMessage("Transporter1", "Robot1 rotating",D,"degrees").
 
 +grasping : true <-
 	.print("Received signal: Robot1 grasping");
-	robotArmGrasp("robot1")[artifact_name(floorMap)].
+	robotArmGrasp("robot1")[artifact_name(floorMap)];
+	logMessage("Transporter1", "Robot1 grasping").
 
 +releasing : true <-
 	.print("Received signal: Robot1 releasing");
-	robotArmRelease("robot1")[artifact_name(floorMap)].
+	robotArmRelease("robot1")[artifact_name(floorMap)];
+	logMessage("Transporter1", "Robot1 releasing").
+	
 
 +loading : true <-
 	.print("Received signal: Robot2 loading");
-	driverLoad("robot2")[artifact_name(floorMap)].
+	driverLoad("robot2")[artifact_name(floorMap)];
+	logMessage("Transporter1", "Robot2 loading").
 
 +unloading : true <- .print("Received signal: Robot2 unloading");
-	driverRelease("robot2")[artifact_name(floorMap)].
+	driverRelease("robot2")[artifact_name(floorMap)];
+	logMessage("Transporter1", "Robot2 unloading").
 
 +attaching : true <- .print("Received signal: Robot2 attaching");
-	driverAttach("robot2")[artifact_name(floorMap)].
+	driverAttach("robot2")[artifact_name(floorMap)];
+	logMessage("Transporter1", "Robot2 attaching").
 
 +detaching : true <- .print("Received signal: Robot2 detatching");
-	driverRelease("robot2")[artifact_name(floorMap)].
+	driverRelease("robot2")[artifact_name(floorMap)];
+	logMessage("Transporter1", "Robot2 releasing").
 
 +moving(X,Y) : true <-
 	.print("Received signal: Robot2 moving to (",X,",",Y,")");
-	driverMove("robot2",X,Y)[artifact_name(floorMap)].
+	driverMove("robot2",X,Y)[artifact_name(floorMap)];
+	logMessage("Transporter1", "Robot2 moving to ( ",X,",",Y," )").
 
 +rotating(ThingArtifactName,D) : true <-
 	.print("Received signal: ",ThingArtifactName," rotating ", D, " degrees");
 	.wait(3000);
-	robotArmRotate(ThingArtifactName,D)[artifact_name(floorMap)].
+	robotArmRotate(ThingArtifactName,D)[artifact_name(floorMap)];
+	logMessage("Transporter1",ThingArtifactName,"rotating",D,"degrees").
 
 +grasping(ThingArtifactName) : true <-
 	.print("Received signal: ",ThingArtifactName," grasping");
 	.wait(3000);
-	robotArmGrasp(ThingArtifactName)[artifact_name(floorMap)].
+	robotArmGrasp(ThingArtifactName)[artifact_name(floorMap)];
+	logMessage("Transporter1",ThingArtifactName,"grasping").
 
 +releasing(ThingArtifactName) : true <-
 	.print("Received signal: ",ThingArtifactName, " releasing");
 	.wait(3000);
-	robotArmRelease(ThingArtifactName)[artifact_name(floorMap)].
+	robotArmRelease(ThingArtifactName)[artifact_name(floorMap)];
+	logMessage("Transporter1",ThingArtifactName,"releasing").
 
 
 
