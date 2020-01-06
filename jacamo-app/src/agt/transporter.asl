@@ -96,12 +96,12 @@ in_library(G)
 	hasAction(_,"http://example.com/Gripper")[artifact_name(_,ThingArtifactName)] &
 	in_range(ThingArtifactName,X1,Y1) &
 	in_range(ThingArtifactName,X2,Y2) <-
-	.print("Need Thing artifact to deliver from (",X1,",",Y1,") to (",X2,",",Y2,")");
+	logMessage("Transporter1","I need a plan to deliver with the Thing artifact", ThingArtifactName);
 	?location(ThingArtifactName,Xr,Yr);
 	angularDisplacement(X1,Y1,Xr,Yr,D1);
 	angularDisplacement(X2,Y2,Xr,Yr,D2);
 	!ensure_plan(pickAndPlace(D1,D2),ThingArtifactName);
-	.print("Ready to deliver with", ThingArtifactName);
+	logMessage("Transporter1","Ready to deliver with", ThingArtifactName);
 	!pickAndPlace(D1,D2);
 	-+item_position(X2,Y2).
 
@@ -131,64 +131,68 @@ in_library(G)
 
 +!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot2",R2Name,WorkspaceName)&
 	thing_artifact_available(_,R3Name,_)
- <-	logMessage("Transporter1","I will need a plan for the driver artifact ",R2Name);
+ <-	logMessage("Transporter1","I will need a plan to push the item with the driver artifact ",R2Name);
 	?location(R3Name,Xr3,Yr3);
 	?range(R3Name,R3);
 	.print("range ",R3);
 	!ensure_plan("push(X1,Y1,X2,Y2)",R2Name);
+	logMessage("Transporter1","Ready to deliver with artifact ", R2Name);
 	lineCircleCloseIntersection(X1,Y1,Xr3,Yr3,R3,Xi3,Yi3);
-	!push(X1-5,Y1-10,Xi3,Yi3);
+	!push(X1-5,Y1-10,500,380);
 	-+item_position(500,400).
 
 
 +!ensure_plan(Goal,ArtifactName) :.term2string(G,Goal) & .print(G) & in_library({+!G}) <-
-	.print("Plan library contains an available plan for goal :", Goal).
+	logMessage("Transporter1","Plan library contains an available plan for goal: ", Goal).
 
 
 +!ensure_plan(Goal,ArtifactName) : artifact_available("www.infra.ManualRepoArtifact",_,_) <-
-	.print("No plan in the library for goal ", Goal);
-	.print("Let's find and consult the Manual of ", ArtifactName);
+	logMessage("Transporter1","No plan in the library for goal: ", Goal);
+	logMessage("Transporter1","Let's find and consult the Manual of ", ArtifactName);
 	!findAndConsultManual(Goal,ArtifactName).
 
 
 +!findAndConsultManual(Goal,ArtifactName) :  artifact_available(ArtifactClass,ArtifactName,_) &
 	hasUsageProtocol(Goal,_,Content,ArtifactClass) <-
-	.print("[Transporter1] Found an applicable plan for goal ", Goal, " in the manual of class ", ArtifactName);
+	logMessage("Transporter1", "Found a usage protocol with an applicable plan for goal: ", Goal, " in the Manual of class ", ArtifactName);
 	.add_plan(Content);
-	.print("A new plan is added in the plan library").
+	logMessage("Transporter1","A new plan is added in the plan library").
 
 
 +!findAndConsultManual(Goal,ArtifactName) : thing_artifact_available(_,ArtifactName,_) &
 	hasUsageProtocol(Goal,_,Content,ArtifactName) <-
-	.print("[Transporter1] Found an applicable plan for goal ", Goal, " in the manual of class ", ArtifactName);
+	logMessage("Transporter1","Found a usage protocol with an applicable plan for goal: ", Goal, " in the Manual of Thing Artfact ", ArtifactName);
 	.add_plan(Content);
-	.print("A new plan is added in the plan library: ").
+	logMessage("Transporter1","A new plan is added in the plan library").
 
 
 +!findAndConsultManual(Goal,ArtifactName) : search_engine_available <-
+	logMessage("Transporter1","No Manual or usage protocol was found for artifact", ArtifactName, "and goal:", Goal, "in the Manual repository");
+	logMessage("Transporter1","Let's use a search engine to discover Manuals for artifact", ArtifactName);
 	?thing_artifact_available(ArtifactIRI, ArtifactName , _);
 	.concat("<",ArtifactIRI,">",ArtifactIRIAcute);
 	searchArtifactResource("eve: <http://w3id.org/eve#>","","eve:explains", ArtifactIRIAcute, SubjectResult, PredicateResult, ObjectResult)[SE];
-	.print("[Transporter1] I discovered a manual: ", Goal, " that explains " , ObjectResult);
+	logMessage("Transporter1","I discovered a Manual:", SubjectResult, "that explains" , ObjectResult);
 	.send(node_manager, achieve, generateArtifactManual(SubjectResult, ArtifactName, true));
 	.wait(3000);
 	?hasUsageProtocol(_,"true",Content,ArtifactName);
+	logMessage("Transporter1","Found a usage protocol with an applicable plan for goal: ", Goal, " in the Manual of Artifact ", ArtifactName);
 	.add_plan(Content);
 	.print("A new plan is added in the plan library: ").
 
 -!findAndConsultManual(Goal,ArtifactName) : true <-
-	.print("No plan found in the environment for goal: ", Goal);
+	logMessage("Transporter1", "No plan found in the environment for goal:", Goal);
 	!askAgent(Goal).
 	
 
 +!askAgent(Goal) : true <-
-	.print("Hi Transporter 2.0. Do you have any plans for the goal: ", Goal,"?");
+	logMessage("Transporter1","Hi Transporter 2.0! Do you have any plans for the goal: ", Goal,"?");
 	.concat("+!",Goal,AchievementGoal);
 	.send(transporter2,askHow,AchievementGoal);
 	logMessage("Transporter2","There is a plan for you for goal: ", Goal).
 	
 -!ensurePlan(Goal,Artifact) : artifact_available("www.infra.ManualRepoArtifact",_,_) <-
-	.print("I looked at my plan library, search for artifact manuals and asked other agents. No plan was found for delivering the item. Hopefully, a new artifact or manual will be added in the environment. Please try again!"). 
+	logMessage("Transporter1","I looked at my plan library, search for artifact manuals and asked other agents. No plan was found for delivering the item. Hopefully, a new artifact or manual will be added in the environment. Please try again!"). 
 
 +!setUpSearchEngine : search_engine_URI(SearchEngineURI) &
 	crawler_URI(CrawlerURI) <-

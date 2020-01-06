@@ -45,6 +45,9 @@ public class ShopFloorMap extends Artifact{
 						} else if (jo.has("changeArtifact")) {
 							jo = (JSONObject) jo.get("changeArtifact");
 							System.out.println("Received request to change artifact " + jo.getString("name") + " enabled: " + jo.getBoolean("enabled"));
+						} else if (jo.has("changeManual")) {
+							jo = (JSONObject) jo.get("changeManual");
+							System.out.println("Received request to change manual " + jo.getString("name") + " enabled: " + jo.getBoolean("enabled"));
 						}
 					}
 				} catch(JSONException e) {
