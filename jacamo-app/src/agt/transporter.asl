@@ -120,9 +120,9 @@ in_library(G)
 	angularDisplacement(X2,Y2,Xr1,Yr1,D2);
 	lineCircleCloseIntersection(X2,Y2,Xr1,Yr1,R1,Xi1,Yi1);
 	lineCircleCloseIntersection(Xi1,Yi1,Xr3,Yr3,R3,Xi3,Yi3);
-	logMessage("","Transporter1","Ready to deliver with artifact ", R1Name);
+	logMessage("Transporter1","Ready to deliver with artifact ", R1Name);
 	!pickAndPlace(R1Name,D1,D2);
-	logMessage("","Transporter1","Ready to deliver with artifact ", R2Name);
+	logMessage("Transporter1","Ready to deliver with artifact ", R2Name);
 	!drive(Xi1,Yi1,Xi3,Yi3);
 	-+item_position(500,400).
 
