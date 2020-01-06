@@ -101,10 +101,10 @@ public class ShopFloorMap extends Artifact{
 	@OPERATION
 	void logMessage(String origin, Object... args){
 		String message = "";
-		origin = "";
 		for (Object obj : args){
-			origin += (String.valueOf(obj)) + " ";
+			message += (String.valueOf(obj)) + " ";
 		}
+		System.out.println("loggin message to GUI: origin=" + origin + " message=" + message);
 		this.ws.sendMessage("{\"terminal\": {\"origin\":\"" + origin + "\", \"message\": \"" + message + "\"}}");
 	}
 
