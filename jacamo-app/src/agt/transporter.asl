@@ -183,16 +183,17 @@ in_library(G)
 -!findAndConsultManual(Goal,ArtifactName) : true <-
 	logMessage("Transporter1", "No plan found in the environment for goal:", Goal);
 	!askAgent(Goal).
-	
+
 
 +!askAgent(Goal) : true <-
 	logMessage("Transporter1","Hi Transporter 2.0! Do you have any plans for the goal: ", Goal,"?");
+	.wait(3000);
 	.concat("+!",Goal,AchievementGoal);
 	.send(transporter2,askHow,AchievementGoal);
 	logMessage("Transporter2","There is a plan for you for goal: ", Goal).
-	
+
 -!ensurePlan(Goal,Artifact) : artifact_available("www.infra.ManualRepoArtifact",_,_) <-
-	logMessage("Transporter1","I looked at my plan library, search for artifact manuals and asked other agents. No plan was found for delivering the item. Hopefully, a new artifact or manual will be added in the environment. Please try again!"). 
+	logMessage("Transporter1","I looked at my plan library, search for artifact manuals and asked other agents. No plan was found for delivering the item. Hopefully, a new artifact or manual will be added in the environment. Please try again!").
 
 +!setUpSearchEngine : search_engine_URI(SearchEngineURI) &
 	crawler_URI(CrawlerURI) <-
@@ -247,7 +248,6 @@ in_library(G)
 	.print("Received signal: Robot1 releasing");
 	robotArmRelease("robot1")[artifact_name(floorMap)];
 	logMessage("Transporter1", "Robot1 releasing").
-	
 
 +loading : true <-
 	.print("Received signal: Robot2 loading");
