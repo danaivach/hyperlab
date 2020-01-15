@@ -2,6 +2,8 @@
 
 environment_IRI("http://localhost:8080/environments/shopfloor").
 
+environment_UI(floorMap).
+
 search_engine_URI("http://localhost:9090/searchEngine").
 crawler_URI("http://localhost:9090/crawler").
 crawl_env_resources("{'link': 'http://w3id.org/eve#contains'}").
@@ -35,16 +37,31 @@ in_library(G)
 
 +!start : environment_IRI(EnvIRI) <-
 	logMessage("Transporter1","Hello WWWorld. This is Transporter1.0! Let's see if I can help in the environment:",EnvIRI);
-	.wait(1000);
+	.wait(3000);
 	.send(node_manager, achieve, environment_loaded(EnvIRI));
-	logMessage("Transporter1","Loading environment...");
-	!setUpSearchEngine.
+	logMessage("Transporter1","Loading environment...").
 
 
 +environment_loaded(EnvIRI, WorkspacesNames) : true <-
 	logMessage("Transporter1","Environment loaded:", EnvIRI);
 	logMessage("------------------------------------------------------------------");
 	logMessage("Transporter1","Place the item by clicking on a location on the map and I will transfer it back to (600,400)").
+
++environment_UI(MapName) : true <-
+	lookupArtifact(MapName,MapId);
+	+ui_available(MapName,MapId).
+
++search_engine_URI(SearchEngineURI) : crawler_URI(CrawlerURI) <-
+	makeArtifact("se", "www.SearchEngineArtifact", [SearchEngineURI], SE);
+	makeArtifact("ce", "www.CrawlerEngineArtifact", [CrawlerURI] , CE);
+	?environment_IRI(EnvIRI);
+	addSeed(EnvIRI)[CE];
+	?crawl_env_resources(ContainsLink);
+	registerLink(ContainsLink)[CE];
+	?crawl_explains(ExplainsLink);
+	registerLink(ExplainsLink)[CE];
+	+search_engine_available.
+
 
 +destination(X,Y) : true <- logMessage("Transporter1","Destination set to (",X,",",Y,")").
 
@@ -195,20 +212,8 @@ in_library(G)
 -!ensurePlan(Goal,Artifact) : artifact_available("www.infra.ManualRepoArtifact",_,_) <-
 	logMessage("Transporter1","I looked at my plan library, search for artifact manuals and asked other agents. No plan was found for delivering the item. Hopefully, a new artifact or manual will be added in the environment. Please try again!").
 
-+!setUpSearchEngine : search_engine_URI(SearchEngineURI) &
-	crawler_URI(CrawlerURI) <-
-	makeArtifact("se", "www.SearchEngineArtifact", [SearchEngineURI], SE);
-	makeArtifact("ce", "www.CrawlerEngineArtifact", [CrawlerURI] , CE);
-	?environment_IRI(EnvIRI);
-	addSeed(EnvIRI)[CE];
-	?crawl_env_resources(ContainsLink);
-	registerLink(ContainsLink)[CE];
-	?crawl_explains(ExplainsLink);
-	registerLink(ExplainsLink)[CE];
-	+search_engine_available.
 
-
-+artifact_available(_,ArtifactName,WorkspaceName) : true <-
++artifact_available(_,ArtifactName,WorkspaceName) : ui_available(MapName,MapId) <-
 	logMessage("Transporter1","An artifact is available:", ArtifactName, "in workspace: ", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);
 	focusWhenAvailable(ArtifactName).
