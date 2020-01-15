@@ -116,7 +116,7 @@
 	.print("Creating Cartago Artifact");
 	makeArtifact(ArtifactName, ArtifactClassName, InitParams, ArtID);
 	+artifact_details(ArtifactIRI, ArtifactName, ArtifactClassName, ArtID);
-	.broadcast(tell, artifact_available(ArtifactClassName, ArtifactName, ArtID, WorkspaceName)).
+	.broadcast(tell, artifact_available(ArtifactClassName, ArtifactName, WorkspaceName)).
 
 
 +!generateArtifactManual(EntityIRI, ArtifactClassOrName, true) : true <-
@@ -133,8 +133,4 @@
 	.print("Found a manual for the artifact ", ArtifactClassOrName , ". Available usage protocols: ", ManualName);
 	registerManual(ArtifactClassOrName, ManualName, ManualUse, ManualDetails).
 
-
-+!relateArtifacts(ArtIRI1, ArtIRI2) : true <-
-	//requestArtifactRelation(ArtIRI1, ArtIRI2);
-	.print("Relate Artifacts").
 

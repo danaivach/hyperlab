@@ -123,8 +123,8 @@ in_library(G)
 	-+item_position(X2,Y2).
 
 
-+!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot1",R1Name,_,_) &
-	artifact_available("www.Robot2",R2Name,_,_) &
++!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot1",R1Name,_) &
+	artifact_available("www.Robot2",R2Name,_) &
 	thing_artifact_available(_,R3Name,_) &
 	in_range(R1Name,X1,Y1)  &
 	in_range(R3Name,X2,Y2)   <-
@@ -146,7 +146,7 @@ in_library(G)
 	-+item_position(Xi3,Yi3).
 
 
-+!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot2",R2Name,_,_)&
++!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot2",R2Name,_)&
 	thing_artifact_available(_,R3Name,_)
  <-	logMessage("Transporter1","I will need a plan to push the item with the driver artifact ",R2Name);
 	?location(R3Name,Xr3,Yr3);
@@ -163,13 +163,13 @@ in_library(G)
 	logMessage("Transporter1","Plan library contains an available plan for goal: ", Goal).
 
 
-+!ensure_plan(Goal,ArtifactName) : artifact_available("www.infra.ManualRepoArtifact",_,_,_) <-
++!ensure_plan(Goal,ArtifactName) : artifact_available("www.infra.ManualRepoArtifact",_,_) <-
 	logMessage("Transporter1","No plan in the library for goal: ", Goal);
 	logMessage("Transporter1","Let's find and consult the Manual of ", ArtifactName);
 	!findAndConsultManual(Goal,ArtifactName).
 
 
-+!findAndConsultManual(Goal,ArtifactName) :  artifact_available(ArtifactClass,ArtifactName,_,_) &
++!findAndConsultManual(Goal,ArtifactName) :  artifact_available(ArtifactClass,ArtifactName,_) &
 	hasUsageProtocol(Goal,_,Content,ArtifactClass) <-
 	logMessage("Transporter1", "Found a usage protocol with an applicable plan for goal: ", Goal, " in the Manual of class ", ArtifactName);
 	.add_plan(Content);
@@ -209,11 +209,11 @@ in_library(G)
 	.send(transporter2,askHow,AchievementGoal);
 	logMessage("Transporter2","There is a plan for you for goal: ", Goal).
 
--!ensurePlan(Goal,Artifact) : artifact_available("www.infra.ManualRepoArtifact",_,_,_) <-
+-!ensurePlan(Goal,Artifact) : artifact_available("www.infra.ManualRepoArtifact",_,_) <-
 	logMessage("Transporter1","I looked at my plan library, search for artifact manuals and asked other agents. No plan was found for delivering the item. Hopefully, a new artifact or manual will be added in the environment. Please try again!").
 
 
-+artifact_available(_,ArtifactName,ArtID,WorkspaceName) : ui_available(MapName,MapID) <-
++artifact_available(_,ArtifactName,WorkspaceName) : ui_available(MapName,MapID) <-
 	logMessage("Transporter1","An artifact is available:", ArtifactName, "in workspace: ", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);
 	focusWhenAvailable(ArtifactName).
