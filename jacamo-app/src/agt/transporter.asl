@@ -208,15 +208,6 @@ in_library(G)
 	+search_engine_available.
 
 
-+artifact_available("www.Robot1",ArtifactName,WorkspaceName) : true <-
-	logMessage("Transporter1","An artifact is available:", ArtifactName, "in workspace: ", WorkspaceName);
-	joinWorkspace(WorkspaceName,WorkspaceArtId);
-	focusWhenAvailable(ArtifactName);
-	?location(X,Y);
-	?range(R);
-	+location(ArtifactName,X,Y);
-	+range(ArtifactName,R).
-
 +artifact_available(_,ArtifactName,WorkspaceName) : true <-
 	logMessage("Transporter1","An artifact is available:", ArtifactName, "in workspace: ", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);
