@@ -216,7 +216,9 @@ in_library(G)
 +artifact_available(_,ArtifactName,WorkspaceName) : ui_available(MapName,MapID) <-
 	logMessage("Transporter1","An artifact is available:", ArtifactName, "in workspace: ", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);
-	focusWhenAvailable(ArtifactName).
+	focusWhenAvailable(ArtifactName);
+	lookupArtifact(ArtifactName,ArtID);
+	linkArtifacts(ArtID,"floorMap",MapID).
 
 
 +thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName) : true <-
