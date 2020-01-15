@@ -116,7 +116,7 @@
 	.print("Creating Cartago Artifact");
 	makeArtifact(ArtifactName, ArtifactClassName, InitParams, ArtID);
 	+artifact_details(ArtifactIRI, ArtifactName, ArtifactClassName, ArtID);
-	.broadcast(tell, artifact_available(ArtifactClassName, ArtifactName, WorkspaceName)).
+	.broadcast(tell, artifact_available(ArtifactClassName, ArtifactName, ArtID, WorkspaceName)).
 
 
 +!generateArtifactManual(EntityIRI, ArtifactClassOrName, true) : true <-
