@@ -139,7 +139,7 @@ public class WebEnvironmentArtifact extends Artifact {
       OpFeedbackParam<String[]> initParams, OpFeedbackParam<Boolean> hasManual, OpFeedbackParam<String> webSubHubIRI) {
 
     Optional<WebEntity> artifactOpt = WebEntity.fetchEntity(artifactIRIStr);
-    //TODO check if entity is artifavt
+    //TODO check if entity is artifact
     if (artifactOpt.isPresent()) {
       WebEntity artifact = artifactOpt.get();
 
