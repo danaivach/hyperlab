@@ -2,97 +2,88 @@
 <http://localhost:8080/manuals/phantomXmanual> a <http://w3id.org/eve#Manual>;
   <http://w3id.org/eve#explains> <http://localhost:8080/artifacts/robot3>;
   <http://w3id.org/eve#hasName> "phantomXmanual";
-  <http://w3id.org/eve#hasUsageProtocol> _:node1dukajrq5x84 .
+  <http://w3id.org/eve#hasUsageProtocol> _:node1duptspgmx85 .
 
-_:node1dukajrq5x84 <http://w3id.org/eve#hasBody> """ .print(\" \");
-							//act(\"http://example.com/Base\",[[\"http://example.com/Value\", D1]];
-							//act(\"http://example.com/Shoulder\",[[\"http://example.com/Value\", 560]];
-							//act(\"http://example.com/Gripper\",[[\"http://example.com/Value\", 500]]
-							-+rotating(\"Robot3\",D1);
-							-+grasping(\"Robot3\");
-							-+rotating(\"Robot3\",D2);
-							-+releasing(\"Robot3\") """;
+_:node1duptspgmx85 <http://w3id.org/eve#hasBody> " -+rotating(\"Robot3\",D1); -+grasping(\"Robot3\"); -+rotating(\"Robot3\",D2); -+releasing(\"Robot3\") ";
   <http://w3id.org/eve#hasFunction> "pickAndPlace(D1,D2)";
   <http://w3id.org/eve#hasName> "deliver";
   <http://w3id.org/eve#hasPrecondition> "true" .
 
 <http://localhost:8080/artifacts/robot2> a <http://w3id.org/eve#Artifact>;
   <http://w3id.org/eve#hasCartagoArtifact> "www.Robot2";
-  <http://w3id.org/eve#hasManual> _:node1dukajrq5x17 .
+  <http://w3id.org/eve#hasManual> _:node1duptspgmx17 .
 
-_:node1dukajrq5x17 <http://w3id.org/eve#hasName> "driverManual";
-  <http://w3id.org/eve#hasUsageProtocol> _:node1dukajrq5x18 .
+_:node1duptspgmx17 <http://w3id.org/eve#hasName> "driverManual";
+  <http://w3id.org/eve#hasUsageProtocol> _:node1duptspgmx18 .
 
-_:node1dukajrq5x18 <http://w3id.org/eve#hasBody> """ move(X1,Y1);
-					  load;
-					  move(X2,Y2);
-					  unload """;
+_:node1duptspgmx18 <http://w3id.org/eve#hasBody> """ move(X1,Y1);					  load;					  move(X2,Y2);					  unload """;
   <http://w3id.org/eve#hasFunction> "drive(X1,Y1,X2,Y2)";
   <http://w3id.org/eve#hasName> "loadAndDrive";
   <http://w3id.org/eve#hasPrecondition> "true" .
 
-<http://localhost:8080/artifacts/robot2> <http://w3id.org/eve#hasName> "Robot2" .
+<http://localhost:8080/artifacts/robot2> <http://w3id.org/eve#hasName> "Robot2";
+  <http://w3id.org/eve#isRobot> "Robot2" .
 
 <http://localhost:8080/environments/shopfloor> a <http://w3id.org/eve#Environment>;
   <http://w3id.org/eve#contains> <http://localhost:8080/workspaces/interactionsWksp> .
 
 <http://localhost:8080/artifacts/robot3> a <http://w3id.org/eve#Artifact>, <http://www.w3.org/ns/td#Thing>;
   <http://www.w3.org/ns/td#base> "http://192.168.2.50/"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
-  <http://www.w3.org/ns/td#interaction> _:node1dukajrq5x30 .
+  <http://www.w3.org/ns/td#interaction> _:node1duptspgmx31 .
 
-_:node1dukajrq5x30 a <http://example.com/Base>, <http://www.w3.org/ns/td#Action>;
-  <http://www.w3.org/ns/td#form> _:node1dukajrq5x31 .
+_:node1duptspgmx31 a <http://example.com/Base>, <http://www.w3.org/ns/td#Action>;
+  <http://www.w3.org/ns/td#form> _:node1duptspgmx32 .
 
-_:node1dukajrq5x31 <http://iotschema.org/protocol/httpmethodName> "PUT";
+_:node1duptspgmx32 <http://iotschema.org/protocol/httpmethodName> "PUT";
   <http://www.w3.org/ns/td#href> "https://api.interactions.ics.unisg.ch/leubot/wrist/rotation"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
   <http://www.w3.org/ns/td#mediaType> "application/json";
   <http://www.w3.org/ns/td#rel> "invokeAction" .
 
-_:node1dukajrq5x30 <http://www.w3.org/ns/td#inputSchema> _:node1dukajrq5x32 .
+_:node1duptspgmx31 <http://www.w3.org/ns/td#inputSchema> _:node1duptspgmx33 .
 
-_:node1dukajrq5x32 <http://www.w3.org/ns/td#field> _:node1dukajrq5x33 .
+_:node1duptspgmx33 <http://www.w3.org/ns/td#field> _:node1duptspgmx34 .
 
-_:node1dukajrq5x33 <http://www.w3.org/ns/td#name> "token";
-  <http://www.w3.org/ns/td#schema> _:node1dukajrq5x34 .
+_:node1duptspgmx34 <http://www.w3.org/ns/td#name> "token";
+  <http://www.w3.org/ns/td#schema> _:node1duptspgmx35 .
 
-_:node1dukajrq5x34 <http://www.w3.org/ns/td#const> "\"c347b252a29f75104fb47b10b4e75e5c\"";
+_:node1duptspgmx35 <http://www.w3.org/ns/td#const> "\"c347b252a29f75104fb47b10b4e75e5c\"";
   <http://www.w3.org/ns/td#schemaType> <http://www.w3.org/ns/td#Boolean> .
 
-_:node1dukajrq5x32 <http://www.w3.org/ns/td#field> _:node1dukajrq5x35 .
+_:node1duptspgmx33 <http://www.w3.org/ns/td#field> _:node1duptspgmx36 .
 
-_:node1dukajrq5x35 <http://www.w3.org/ns/td#name> "value";
-  <http://www.w3.org/ns/td#schema> _:node1dukajrq5x36 .
+_:node1duptspgmx36 <http://www.w3.org/ns/td#name> "value";
+  <http://www.w3.org/ns/td#schema> _:node1duptspgmx37 .
 
-_:node1dukajrq5x36 a <http://example.com/Value>;
+_:node1duptspgmx37 a <http://example.com/Value>;
   <http://www.w3.org/ns/td#schemaType> <http://www.w3.org/ns/td#Number> .
 
-_:node1dukajrq5x32 <http://www.w3.org/ns/td#schemaType> <http://www.w3.org/ns/td#Object> .
+_:node1duptspgmx33 <http://www.w3.org/ns/td#schemaType> <http://www.w3.org/ns/td#Object> .
 
-_:node1dukajrq5x30 <http://www.w3.org/ns/td#name> "Base" .
+_:node1duptspgmx31 <http://www.w3.org/ns/td#name> "Base" .
 
-<http://localhost:8080/artifacts/robot3> <http://www.w3.org/ns/td#interaction> _:node1dukajrq5x37 .
+<http://localhost:8080/artifacts/robot3> <http://www.w3.org/ns/td#interaction> _:node1duptspgmx38 .
 
-_:node1dukajrq5x37 a <http://example.com/Gripper>, <http://www.w3.org/ns/td#Action>;
-  <http://www.w3.org/ns/td#form> _:node1dukajrq5x38 .
+_:node1duptspgmx38 a <http://example.com/Gripper>, <http://www.w3.org/ns/td#Action>;
+  <http://www.w3.org/ns/td#form> _:node1duptspgmx39 .
 
-_:node1dukajrq5x38 <http://iotschema.org/protocol/httpmethodName> "PUT";
+_:node1duptspgmx39 <http://iotschema.org/protocol/httpmethodName> "PUT";
   <http://www.w3.org/ns/td#href> "https://api.interactions.ics.unisg.ch/leubot/gripper"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
   <http://www.w3.org/ns/td#mediaType> "application/json";
   <http://www.w3.org/ns/td#rel> "invokeAction" .
 
-_:node1dukajrq5x37 <http://www.w3.org/ns/td#inputSchema> _:node1dukajrq5x39 .
+_:node1duptspgmx38 <http://www.w3.org/ns/td#inputSchema> _:node1duptspgmx40 .
 
-_:node1dukajrq5x39 <http://www.w3.org/ns/td#field> _:node1dukajrq5x40 .
+_:node1duptspgmx40 <http://www.w3.org/ns/td#field> _:node1duptspgmx41 .
 
-_:node1dukajrq5x40 <http://www.w3.org/ns/td#name> "value";
-  <http://www.w3.org/ns/td#schema> _:node1dukajrq5x41 .
+_:node1duptspgmx41 <http://www.w3.org/ns/td#name> "value";
+  <http://www.w3.org/ns/td#schema> _:node1duptspgmx42 .
 
-_:node1dukajrq5x41 a <http://example.com/Value>;
+_:node1duptspgmx42 a <http://example.com/Value>;
   <http://www.w3.org/ns/td#schemaType> <http://www.w3.org/ns/td#Number> .
 
-_:node1dukajrq5x39 <http://www.w3.org/ns/td#schemaType> <http://www.w3.org/ns/td#Object> .
+_:node1duptspgmx40 <http://www.w3.org/ns/td#schemaType> <http://www.w3.org/ns/td#Object> .
 
-_:node1dukajrq5x37 <http://www.w3.org/ns/td#name> "Gripper" .
+_:node1duptspgmx38 <http://www.w3.org/ns/td#name> "Gripper" .
 
 <http://localhost:8080/artifacts/robot3> <http://www.w3.org/ns/td#name> "Robot3" .
 

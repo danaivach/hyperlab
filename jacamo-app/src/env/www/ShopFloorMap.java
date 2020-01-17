@@ -22,7 +22,7 @@ public class ShopFloorMap extends Artifact{
 	public static final int NOTIFICATION_DELAY = 10;
 
 	void init() {
-		this.ws = new WebsocketClientEndpoint(URI.create("ws://localhost:40510"));
+		this.ws = new WebsocketClientEndpoint(URI.create("ws://localhost:8080"));
 
 		execInternalOp("deliverNotifications");
 
