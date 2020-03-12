@@ -1,0 +1,106 @@
+/*
+   Project playground2.0
+
+   Gradle build file for JaCaMo Applications
+   November 21, 2019 - 17:19:40
+*/
+
+defaultTasks 'run'
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+version '1.0'
+group   'org.jacamo'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    jcenter()
+    mavenCentral()
+
+    maven { url "http://jacamo.sourceforge.net/maven2" }
+    maven { url "https://raw.github.com/jacamo-lang/mvn-repo/master" }
+    //maven { url "https://jade.tilab.com/maven/" }
+
+    flatDir {
+       dirs 'lib'
+    }
+}
+
+dependencies {
+    compile group: 'org.jacamo', name: 'jacamo', version: '0.8-SNAPSHOT'
+    compile project(':wot-td-parser')
+    compile 'org.apache.httpcomponents:httpclient:4.5.5'
+    compile 'org.apache.commons:commons-rdf-rdf4j:0.5.0'
+    
+    compile group: 'javax.websocket', name: 'javax.websocket-client-api', version: '1.1'
+    compile group: 'org.glassfish.tyrus.bundles', name: 'tyrus-standalone-client', version: '1.9'
+    compile group: 'org.json', name: 'json', version: '20090211'
+    compile group: 'com.google.guava', name: 'guava', version: '14.0'
+
+    compile group: 'org.eclipse.jetty.aggregate', name: 'jetty-all', version: '9.0.0.RC2'
+    compile group: 'org.slf4j', name:'slf4j-simple', version:'1.7.21'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/env'
+            srcDir 'src/agt'
+            srcDir 'src/org'
+            srcDir 'src/java'
+        }
+        resources {
+            srcDir 'src/resources'
+        }
+    }
+}
+
+task run (type: JavaExec, dependsOn: 'classes') {
+    group       ' JaCaMo'
+    description 'runs the JaCaMo application'
+    doFirst {
+        mkdir 'log'
+    }
+    main 'jacamo.infra.JaCaMoLauncher'
+    args 'playground2.0.jcm'
+    classpath sourceSets.main.runtimeClasspath
+}
+
+
+task uberJar(type: Jar, dependsOn: 'classes') {
+    group      ' JaCaMo'
+    description 'creates a single runnable jar file with all dependencies'
+
+    manifest {
+        attributes 'Main-Class': 'jacamo.infra.JaCaMoLauncher'
+    }
+    baseName = 'jacamo-playground2.0' // the name must start with jacamo so that jacamo...jar is found in the classpath
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from (project.projectDir.absolutePath) {
+        include '**/*.asl'
+        include '**/*.xml'
+        include '**/*.jcm'
+        include '*.properties'
+    }
+    from (project.buildDir.absolutePath + '/jcm') {
+        include '**/*'
+    }
+    with jar
+
+    doFirst {
+        copy {
+            from 'playground2.0.jcm'
+            rename 'playground2.0.jcm','default.jcm'
+            into project.buildDir.absolutePath + '/jcm'
+        }
+    }
+}
+
+clean {
+    delete 'bin'
+    delete 'build'
+    delete 'log'
+}

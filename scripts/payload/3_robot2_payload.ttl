@@ -1,0 +1,18 @@
+@prefix eve: <http://w3id.org/eve#> .
+
+<http://localhost:8080/artifacts/robot2> 
+  a eve:Artifact ;
+  eve:hasName "Robot2" ;
+  eve:isRobot "Robot2" ;
+  eve:hasCartagoArtifact "www.Robot2" ;
+  eve:hasManual [ eve:hasName "driverManual" ;
+	eve:hasUsageProtocol [ 
+		eve:hasName "loadAndDrive" ;
+		eve:hasFunction "drive(X1,Y1,X2,Y2)" ;
+		eve:hasPrecondition "true" ;
+		eve:hasBody " move(X1,Y1);
+					  load;
+					  move(X2,Y2);
+					  unload "
+	]
+  ].
