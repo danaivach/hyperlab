@@ -1,5 +1,5 @@
 # hyperlab
-A demo scenario for the Web Conference 2020, showcasing a dynamic WoT environment where (partial) plans are missing or need to be assembled by the agents.
+A demo scenario for the Web Conference 2020, showcasing a dynamic WoT environment where (partial) plans are missing or need to be assembled by autonomous and human agents.
 
 # Setup
 * Install gradle
@@ -15,5 +15,6 @@ To run the system, the following steps are necessary:
 * set up a hypermedia environment using [Yggdrasil](https://github.com/Interactions-HSG/yggdrasil/tree/hyperlab_demo) on feature/hyperlab_demo branch on port 8080 (default) by executing `java -jar yggdrasil/build/libs/yggdrasil-0.0-SNAPSHOT-fat.jar -conf yggdrasil/src/main/conf/config1.json`
 * set up a [WoT search engine](https://github.com/Interactions-HSG/wot-search) on port 9090 (default) by executing `java -jar wot-search/build/libs/crawler-0.0-SNAPSHOT-fat.jar -conf wot-search/src/main/conf/config1.json`
 * Create the workspace and the artifacts by executing scripts/setup.sh
-* run the JaCaMo MAS environment in this repo by executing `gradle` in your console from the root directory of the repo
 * run the ui-backend which serves the demo UI on http://localhost:5000 by executing `npm start` in the hyperlab_demo_gui folder
+* run the JaCaMo MAS environment in this repo by executing `gradle` in your console from the root directory of the repo
+
