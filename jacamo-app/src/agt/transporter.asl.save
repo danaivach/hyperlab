@@ -108,10 +108,8 @@ in_library(G)
 	in_range(ThingArtifactName,X2,Y2) <-
 	logMessage("Transporter1", "Available artifact:", ThingArtifactName, ". Needed plan: pickAndPlace(D1,D2).");
 	?location(ThingArtifactName,Xr,Yr);
-	angularDisplacement(X1,Y1,Xr,Yr,V1);
-	angularDisplacement(X2,Y2,Xr,Yr,V2);
-	angularToDigital(V1,D1);
-	angularToDigital(V2,D2);
+	angularDisplacement(X1,Y1,Xr,Yr,D1);
+	angularDisplacement(X2,Y2,Xr,Yr,D2);
 	!ensure_plan("pickAndPlace(D1,D2)",ThingArtifactName);
 	logMessage("Transporter1","Ready to deliver with", ThingArtifactName);
 	!pickAndPlace(D1,D2);
@@ -144,10 +142,8 @@ in_library(G)
 	-+item_position(Xi3,Yi3).
 
 
-+!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,R3Name,_) &
-	hasAction(_,"http://example.com/RotateBase")[artifact_name(_,R3Name)] &
-	hasAction(_,"http://example.com/Grasp")[artifact_name(_,R3Name)]
-	& artifact_available("www.Robot2",R2Name,_)
++!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot2",R2Name,_)&
+	thing_artifact_available(_,R3Name,_)
  <-	logMessage("Transporter1","Available artifact: ",R2Name,". Needed plan: push(X1,Y1,X2,Y2).");
 	logMessage("Transporter1","Available artifact: ",R3Name,". Needed plan: pickAndPlace(D1,D2).");
 	?location(R3Name,Xr3,Yr3);
@@ -164,7 +160,7 @@ in_library(G)
  <-	logMessage("Transporter1","Available artifact: ",R2Name,". Needed plan: push(X1,Y1,X2,Y2).");
 	!ensure_plan("push(X1,Y1,X2,Y2)",R2Name);
 	logMessage("Transporter1","Ready to deliver with artifact ", R2Name);
-	!push(X1-5,Y1-10,X2-2,Y2-15);
+	!push(X1-5,Y1-10,X2,Y2);
 	-+item_position(X2,Y2).
 
 
@@ -232,25 +228,24 @@ in_library(G)
 
 
 +thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName) : true <-
-  	logMessage("Transporter1","A thing artifact is available:" ,ArtifactName, ArtifactIRI, "in workspace:", WorkspaceName);
+  	logMessage("Transporter1","A thing artifact is available:" , ArtifactIRI, "in workspace:", WorkspaceName);
   	joinWorkspace(WorkspaceName, WorkspaceArtId);
 	focusWhenAvailable(ArtifactName);
 	+location(ArtifactName,550,400);
 	+range(ArtifactName,50).
 
--thing_artifact_available(_, ArtifactName, _) : true <-
-	.print("NO PROBLEM"). 
-
-+change_artifact(ThingArtifactName,false) : thing_artifact_available(ArtifactIRI,ArtifactName,WorkspaceName) <- 
-	.print(ArtifactName, " is ", false,ArtifactIRI,WorkspaceName);
-	-thing_artifact_available(ArtifactIRI,ArtifactName,WorkspaceName);
-	+thing_artifact_disabled(ArtifactIRI,ArtifactName,WorkspaceName).
-
-+change_artifact(ArtifactName,true) : thing_artifact_disabled(ArtifactIRI,ArtifactName,WorkspaceName) <- 
-	.print(ArtifactName, " is ", true,ArtifactIRI,WorkspaceName);
-	-thing_artifact_disabled(ArtifactIRI,ArtifactName,WorkspaceName);
-	+thing_artifact_available(ArtifactIRI,ArtifactName,WorkspaceName).
-
++change_artifact(ThingArtifactName,false) : thing_artifact_available(ArtifactIRI,ThingArtifactName,WorkspaceName) <- 
+	.print(ArtifactName, " is ", false);
+	lookupArtifact(ThingArtifactName,ArtID);
+	.print(KArtifactIRI,ThingArtifact,WorkspaceName);
+	disable(
+	-thing_artifact_available(ArtifactIRI, ThingArtifactName, WorkspaceName).
+	
++change_artifact(ThingArtifactName, true) : true <- 
+	.print(ArtifactName, " is ", false);
+	lookupArtifact("Robot3",ArtID);
+	?thing_artifact_available(ArtifactIRI,"Robot3",WorkspaceName);
+	.print(ArtifactIRI,"Robot3",WorkspaceName).
 
 +change_manual(Name,Availability): true <- .print(Name, " is ", Availability).
 
