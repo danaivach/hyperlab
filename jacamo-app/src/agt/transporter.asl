@@ -108,11 +108,13 @@ in_library(G)
 	in_range(ThingArtifactName,X2,Y2) <-
 	logMessage("Transporter1", "Available artifact:", ThingArtifactName, ". Needed plan: pickAndPlace(D1,D2).");
 	?location(ThingArtifactName,Xr,Yr);
-	angularDisplacement(X1,Y1,Xr,Yr,V1);
-	angularDisplacement(X2,Y2,Xr,Yr,V2);
-	angularToDigital(V1,D1);
+	angularDisplacement(X1,Y1,Xr,Yr,D1); // angularDisplacement(X1,Y1,Xr,Yr,V1); when using PhantomX 
+	angularDisplacement(X2,Y2,Xr,Yr,D2);
+	/* uncomment when using the PhantomX robot arm
+	angularToDigital(V1,D1);  
 	angularToDigital(V2,D2);
-	!ensure_plan("pickAndPlace(D1,D2)",ThingArtifactName);
+	*/
+	!ensure_plan("pickAndPlace(D1,D2)",ThingArtifactName); //only applicable when PhantomX robot arm is not in use
 	logMessage("Transporter1","Ready to deliver with", ThingArtifactName);
 	!pickAndPlace(D1,D2);
 	-+item_position(X2,Y2).
@@ -164,7 +166,7 @@ in_library(G)
  <-	logMessage("Transporter1","Available artifact: ",R2Name,". Needed plan: push(X1,Y1,X2,Y2).");
 	!ensure_plan("push(X1,Y1,X2,Y2)",R2Name);
 	logMessage("Transporter1","Ready to deliver with artifact ", R2Name);
-	!push(X1-5,Y1-10,X2-2,Y2-15);
+	!push(X1,Y1,X2,Y2);
 	-+item_position(X2,Y2).
 
 
