@@ -90,16 +90,6 @@ in_library(G)
 	rotate(D2)[artifact_name(ArtifactName)];
 	release[artifact_name(ArtifactName)].
 
-/*
-+!pickAndPlace(D1,D2): true <-
-	.print("Plan: Deliver with Thing artifact ","Robot3");
-	//TODO: These will be events from the Thing Artifact
-	-+rotating("Robot3",D1);
-	-+grasping("Robot3");
-	-+rotating("Robot3",D2);
-	-+releasing("Robot3").
-	//act("http://example.com/Base",[["http://example.com/Value", 512]])[artifact_name(ThingArtifact)].
-*/
 
 +!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,ThingArtifactName,WorkspaceName) &
 	hasAction(_,"http://example.com/RotateBase")[artifact_name(_,ThingArtifactName)] &
@@ -110,11 +100,14 @@ in_library(G)
 	?location(ThingArtifactName,Xr,Yr);
 	angularDisplacement(X1,Y1,Xr,Yr,D1); // angularDisplacement(X1,Y1,Xr,Yr,V1); when using PhantomX 
 	angularDisplacement(X2,Y2,Xr,Yr,D2);
-	/* uncomment when using the PhantomX robot arm
+	/* 
+	//uncomment when using the PhantomX robot arm
+	angularDisplacement(X1,Y1,Xr,Yr,V1);  
+	angularDisplacement(X2,Y2,Xr,Yr,V2);
 	angularToDigital(V1,D1);  
 	angularToDigital(V2,D2);
 	*/
-	!ensure_plan("pickAndPlace(D1,D2)",ThingArtifactName); //only applicable when PhantomX robot arm is not in use
+	!ensure_plan("pickAndPlace(D1,D2)",ThingArtifactName); 
 	logMessage("Transporter1","Ready to deliver with", ThingArtifactName);
 	!pickAndPlace(D1,D2);
 	-+item_position(X2,Y2).
