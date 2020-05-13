@@ -218,32 +218,46 @@ in_library(G)
 	logMessage("Transporter1","----I looked at my plan library, search for artifact manuals and asked other agents. No plan was found for delivering the item. Hopefully, a new artifact or manual will be added in the environment. Please try again!").
 
 
-+artifact_available(_,ArtifactName,WorkspaceName) : ui_available(MapName,MapID) <-
+//a new artifact is in the workspace
++artifact_enabled(ArtifactClassName,ArtifactName,WorkspaceName) : ui_available(MapName,MapID) <-
 	logMessage("Transporter1","An artifact is available:", ArtifactName, "in workspace: ", WorkspaceName);
 	joinWorkspace(WorkspaceName,WorkspaceArtId);
+	+artifact_available(ArtifactClassName,ArtifactName,WorkspaceName);
 	focusWhenAvailable(ArtifactName);
-	lookupArtifact(ArtifactName,ArtID);
-	linkArtifacts(ArtID,"floorMap",MapID).
+	lookupArtifact(ArtifactName,ArtID).
+	//linkArtifacts(ArtID,"floorMap",MapID).
 
-
-+thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName) : true <-
+//a new thing artifact is in the workspace
++thing_artifact_enabled(ArtifactIRI, ArtifactName, WorkspaceName) : true <-
   	logMessage("Transporter1","A thing artifact is available:" ,ArtifactName, ArtifactIRI, "in workspace:", WorkspaceName);
   	joinWorkspace(WorkspaceName, WorkspaceArtId);
+	+thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName);
 	focusWhenAvailable(ArtifactName);
 	+location(ArtifactName,550,400);
 	+range(ArtifactName,50).
 
--thing_artifact_available(_, ArtifactName, _) : true <-
-	.print("NO PROBLEM"). 
+//an artifact is not currently available
++change_artifact(ArtifactName,false) : artifact_available(ArtifactClassName,ArtifactName,WorkspaceName)
+	& artifact_enabled(ArtifactIRI, ArtifactName, WorkspaceName) <- 
+	logMessage("Transporter1","An artifact is unavailable:", ArtifactName, "in workspace: ", WorkspaceName);
+	-artifact_available(ArtifactClassName,ArtifactName,WorkspaceName).
 
-+change_artifact(ThingArtifactName,false) : thing_artifact_available(ArtifactIRI,ArtifactName,WorkspaceName) <- 
-	.print(ArtifactName, " is ", false,ArtifactIRI,WorkspaceName);
-	-thing_artifact_available(ArtifactIRI,ArtifactName,WorkspaceName);
-	+thing_artifact_disabled(ArtifactIRI,ArtifactName,WorkspaceName).
+//a thing artifact is not currently available
++change_artifact(ArtifactName,false) : thing_artifact_available(ArtifactIRI,ArtifactName,WorkspaceName) 
+	& thing_artifact_enabled(ArtifactIRI, ArtifactName, WorkspaceName) <- 
+	logMessage("Transporter1","A thing artifact is unavailable:",ArtifactName, ArtifactIRI, "in workspace:", WorkspaceName);
+	-thing_artifact_available(ArtifactIRI,ArtifactName,WorkspaceName).
+	
+//an artifact is currently available
++change_artifact(ArtifactName,true) : not artifact_available(ArtifactClassName,ArtifactName,WorkspaceName) 
+	& artifact_enabled(ArtifactIRI, ArtifactName, WorkspaceName) <- 
+	logMessage("Transporter1","An artifact is available:", ArtifactName, "in workspace: ", WorkspaceName);
+	+artifact_available(ArtifactClassName,ArtifactName,WorkspaceName).
 
-+change_artifact(ArtifactName,true) : thing_artifact_disabled(ArtifactIRI,ArtifactName,WorkspaceName) <- 
-	.print(ArtifactName, " is ", true,ArtifactIRI,WorkspaceName);
-	-thing_artifact_disabled(ArtifactIRI,ArtifactName,WorkspaceName);
+//a thing artifact is currently available
++change_artifact(ArtifactName,true) : not thing_artifact_available(ArtifactIRI,ArtifactName,WorkspaceName)  
+	& thing_artifact_enabled(ArtifactIRI, ArtifactName, WorkspaceName) <- 
+	logMessage("Transporter1","A thing artifact is available:" ,ArtifactName, ArtifactIRI, "in workspace:", WorkspaceName);
 	+thing_artifact_available(ArtifactIRI,ArtifactName,WorkspaceName).
 
 
