@@ -61,6 +61,7 @@
 	!makeArtifact(WorkspaceName, ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, HasManual, WebSubHubIRI).
 	
 
+
 +!generateNewArtifact(ArtifactIRI) : true <-
 	.print("Creating new artifact: ", ArtifactIRI);
 	getArtifactDetails(ArtifactIRI, ArtifactName, IsThing, ArtifactClassName, InitParams, HasManual, WebSubHubIRI);
@@ -109,14 +110,14 @@
 +!createThingArtifact(WorkspaceName, ArtifactName, ArtifactIRI, ArtID) : true <-
 	makeArtifact(ArtifactName, "www.ThingArtifact", [ArtifactIRI], ArtID);
 	+artifact_details(ArtifactIRI, ArtifactName, ArtID);
-	.broadcast(tell, thing_artifact_available(ArtifactIRI, ArtifactName, WorkspaceName)).
+	.broadcast(tell, thing_artifact_enabled(ArtifactIRI, ArtifactName, WorkspaceName)).
 
 
 +!createCartagoArtifact(WorkspaceName, ArtifactName, ArtifactClassName, InitParams, ArtID) : true <-
 	.print("Creating Cartago Artifact");
 	makeArtifact(ArtifactName, ArtifactClassName, InitParams, ArtID);
 	+artifact_details(ArtifactIRI, ArtifactName, ArtifactClassName, ArtID);
-	.broadcast(tell, artifact_available(ArtifactClassName, ArtifactName, WorkspaceName)).
+	.broadcast(tell, artifact_enabled(ArtifactClassName, ArtifactName, WorkspaceName)).
 
 
 +!generateArtifactManual(EntityIRI, ArtifactClassOrName, true) : true <-
