@@ -91,14 +91,17 @@ in_library(G)
 	release[artifact_name(ArtifactName)].
 
 
-+!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,ThingArtifactName,WorkspaceName) &
+//deliver when current position is in range of R3 and the workload can be assigned to R3
++!deliver(X1,Y1,X2,Y2) : 
+	thing_artifact_available(_,ThingArtifactName,WorkspaceName) &
 	hasAction(_,"http://example.com/RotateBase")[artifact_name(_,ThingArtifactName)] &
 	hasAction(_,"http://example.com/Grasp")[artifact_name(_,ThingArtifactName)] &
 	in_range(ThingArtifactName,X1,Y1) &
 	in_range(ThingArtifactName,X2,Y2) <-
 	logMessage("Transporter1", "Available artifact:", ThingArtifactName, ". Needed plan: pickAndPlace(D1,D2).");
 	?location(ThingArtifactName,Xr,Yr);
-	angularDisplacement(X1,Y1,Xr,Yr,D1); // angularDisplacement(X1,Y1,Xr,Yr,V1); when using PhantomX 
+	//uncomment when not using the PhantomX robot arm
+	angularDisplacement(X1,Y1,Xr,Yr,D1);  
 	angularDisplacement(X2,Y2,Xr,Yr,D2);
 	/* 
 	//uncomment when using the PhantomX robot arm
@@ -112,7 +115,8 @@ in_library(G)
 	!pickAndPlace(D1,D2);
 	-+item_position(X2,Y2).
 
-
+	
+//deliver when current position is in range of R1 and the workload can be split to the 3 robots (R1,R2 and R3)
 +!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot1",R1Name,_) &
 	artifact_available("www.Robot2",R2Name,_) &
 	thing_artifact_available(_,R3Name,_) &
@@ -138,24 +142,48 @@ in_library(G)
 	!drive(Xi1,Yi1,Xi3,Yi3);
 	-+item_position(Xi3,Yi3).
 
+//deliver when current position is in range of R1 and the workload can be split to the 2 robots (R1 and R2)
++!deliver(X1,Y1,X2,Y2) : 
+	artifact_available("www.Robot1",R1Name,_) &
+	artifact_available("www.Robot2",R2Name,_) &
+	in_range(R1Name,X1,Y1) 
+ <-     logMessage("Transporter1","Available artifact: ",R1Name,". Needed plan: pickAndPlace(D1,D2).");
+	logMessage("Transporter1","Available artifact: ",R2Name,". Needed plan: drive(X1,Y1,X2,Y2).");
+	!ensure_plan("pickAndPlace(ArtifactName,D1,D2)",R1Name);
+	!ensure_plan("push(X1,Y1,X2,Y2)",R2Name);
+	?location(R1Name,Xr1,Yr1);
+	?range(R1Name,R1);
+	angularDisplacement(X1,Y1,Xr1,Yr1,D1);
+	angularDisplacement(X2,Y2,Xr1,Yr1,D2);
+	lineCircleCloseIntersection(X2,Y2,Xr1,Yr1,R1,Xi1,Yi1);
+	logMessage("Transporter1","Ready to deliver with artifact ", R1Name);
+	!pickAndPlace(R1Name,D1,D2);
+	logMessage("Transporter1","Ready to deliver with artifact ", R2Name);
+	!push(Xi1,Yi1,X2,Y2);
+	-+item_position(X2,Y2).
 
-+!deliver(X1,Y1,X2,Y2) : thing_artifact_available(_,R3Name,_) &
+
+//deliver when current position is not in range of R3 and the workload can be split to 2 robots (R2 and R3)
++!deliver(X1,Y1,X2,Y2) : 
+	thing_artifact_available(_,R3Name,_) &
 	hasAction(_,"http://example.com/RotateBase")[artifact_name(_,R3Name)] &
-	hasAction(_,"http://example.com/Grasp")[artifact_name(_,R3Name)]
-	& artifact_available("www.Robot2",R2Name,_)
+	hasAction(_,"http://example.com/Grasp")[artifact_name(_,R3Name)] &
+	artifact_available("www.Robot2",R2Name,_) &
+	in_range(R3Name,X2,Y2)
  <-	logMessage("Transporter1","Available artifact: ",R2Name,". Needed plan: push(X1,Y1,X2,Y2).");
 	logMessage("Transporter1","Available artifact: ",R3Name,". Needed plan: pickAndPlace(D1,D2).");
 	?location(R3Name,Xr3,Yr3);
 	?range(R3Name,R3);
-	.print("range ",R3);
 	!ensure_plan("push(X1,Y1,X2,Y2)",R2Name);
+	!ensure_plan("pickAndPlace(ArtifactName,D1,D2)",R3Name);
 	logMessage("Transporter1","Ready to deliver with artifact ", R2Name);
 	lineCircleCloseIntersection(X1,Y1,Xr3,Yr3,R3,Xi3,Yi3);
-	!push(X1-5,Y1-10,500,380);
+	!push(X1,Y1,500,380);
 	-+item_position(500,400).
 
-
-+!deliver(X1,Y1,X2,Y2) : artifact_available("www.Robot2",R2Name,_)
+//deliver when the workload can only be assigned to R2
++!deliver(X1,Y1,X2,Y2) : 
+	artifact_available("www.Robot2",R2Name,_)
  <-	logMessage("Transporter1","Available artifact: ",R2Name,". Needed plan: push(X1,Y1,X2,Y2).");
 	!ensure_plan("push(X1,Y1,X2,Y2)",R2Name);
 	logMessage("Transporter1","Ready to deliver with artifact ", R2Name);
