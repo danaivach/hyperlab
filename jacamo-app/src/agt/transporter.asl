@@ -94,8 +94,6 @@ in_library(G)
 //deliver when current position is in range of R3 and the workload can be assigned to R3
 +!deliver(X1,Y1,X2,Y2) : 
 	thing_artifact_available(_,ThingArtifactName,WorkspaceName) &
-	hasAction(_,"http://example.com/RotateBase")[artifact_name(_,ThingArtifactName)] &
-	hasAction(_,"http://example.com/Grasp")[artifact_name(_,ThingArtifactName)] &
 	in_range(ThingArtifactName,X1,Y1) &
 	in_range(ThingArtifactName,X2,Y2) <-
 	logMessage("Transporter1", "Available artifact:", ThingArtifactName, ". Needed plan: pickAndPlace(D1,D2).");
@@ -166,8 +164,6 @@ in_library(G)
 //deliver when current position is not in range of R3 and the workload can be split to 2 robots (R2 and R3)
 +!deliver(X1,Y1,X2,Y2) : 
 	thing_artifact_available(_,R3Name,_) &
-	hasAction(_,"http://example.com/RotateBase")[artifact_name(_,R3Name)] &
-	hasAction(_,"http://example.com/Grasp")[artifact_name(_,R3Name)] &
 	artifact_available("www.Robot2",R2Name,_) &
 	in_range(R3Name,X2,Y2)
  <-	logMessage("Transporter1","Available artifact: ",R2Name,". Needed plan: push(X1,Y1,X2,Y2).");
@@ -197,8 +193,8 @@ in_library(G)
 
 
 +!ensure_plan(Goal,ArtifactName) : artifact_available("www.infra.ManualRepoArtifact",_,_) <-
-	logMessage("Transporter1","-No plan in the library for: ", ArtifactName);
-	logMessage("Transporter1","--Find and consult the Manual of ", ArtifactName);
+	logMessage("Transporter1","-No plan in the library for:", ArtifactName);
+	logMessage("Transporter1","--Find and consult the Manual of", ArtifactName);
 	!findAndConsultManual(Goal,ArtifactName).
 
 
@@ -211,7 +207,7 @@ in_library(G)
 
 +!findAndConsultManual(Goal,ArtifactName) : thing_artifact_available(_,ArtifactName,_) &
 	hasUsageProtocol(Goal,_,Content,ArtifactName) <-
-	logMessage("Transporter1","--Found a usage protocol with an applicable plan for goal: ", Goal, " in the Manual of Thing Artfact ", ArtifactName);
+	logMessage("Transporter1","--Found a usage protocol with an applicable plan for goal: ", Goal, " in the Manual of Thing Artifact ", ArtifactName);
 	.add_plan(Content);
 	logMessage("Transporter1","--A new plan is added in the plan library").
 
@@ -225,10 +221,10 @@ in_library(G)
 	logMessage("Transporter1","---I discovered a Manual:", SubjectResult, "that explains" , ObjectResult);
 	.send(node_manager, achieve, generateArtifactManual(SubjectResult, ArtifactName, true));
 	.wait(3000);
-	?hasUsageProtocol(_,"true",Content,ArtifactName);
+	?hasUsageProtocol(Goal,"true",Content,ArtifactName);
 	logMessage("Transporter1","---Found a usage protocol with an applicable plan for goal: ", Goal, " in the Manual of Artifact ", ArtifactName);
 	.add_plan(Content);
-	.print("A new plan is added in the plan library: ").
+	.print("A new plan is added in the plan library").
 
 -!findAndConsultManual(Goal,ArtifactName) : true <-
 	logMessage("Transporter1", "---No plan found in the environment for goal:", Goal);
@@ -282,16 +278,15 @@ in_library(G)
 	logMessage("Transporter1","An artifact is available:", ArtifactName, "in workspace: ", WorkspaceName);
 	+artifact_available(ArtifactClassName,ArtifactName,WorkspaceName).
 
-//a thing artifact is currently available
-+change_artifact(ArtifactName,true) : not thing_artifact_available(ArtifactIRI,ArtifactName,WorkspaceName)  
-	& thing_artifact_enabled(ArtifactIRI, ArtifactName, WorkspaceName) <- 
-	logMessage("Transporter1","A thing artifact is available:" ,ArtifactName, ArtifactIRI, "in workspace:", WorkspaceName);
-	+thing_artifact_available(ArtifactIRI,ArtifactName,WorkspaceName).
+//a manual has been removed
++change_manual(ArtifactName,false) : true   <- 
+	logMessage("Transporter1","A manual is unavailable:" ,ArtifactName).
 
+//a manual is available
++change_manual(ArtifactName,true) : true <- 
+	logMessage("Transporter1","A manual is available:" ,ArtifactName).
 
-+change_manual(Name,Availability): true <- .print(Name, " is ", Availability).
-
-+hasAction(Ak,Aj): true <- .print("Action detected", Ak, Aj).
++hasAction(Ak,Aj): true <- .print("Action detected: ", Ak, " has action ", Aj).
 
 //Plans for using the GUI artifact: ShopFloorMap
 +rotating(D) : true <-

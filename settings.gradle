@@ -1,4 +1,0 @@
-include 'jacamo-app', 'wot-td-parser'
-
-rootProject.name = 'hyperlab'
-
