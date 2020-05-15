@@ -1,3 +1,4 @@
+
 package www.infra;
 
 import java.io.IOException;
@@ -77,14 +78,15 @@ public class NotificationServerArtifact extends Artifact {
       while (!notifications.isEmpty()) {
         Notification n = notifications.poll();
         ArtifactId artifactId = artifactRegistry.get(n.getEntityIRI());
-        
-        try {
+	if(artifactId.getArtifactType().equals("www.ThingArtifact")){ 	
+          try {
+       
+            execLinkedOp(artifactId, "onNotification", n);
           
-          execLinkedOp(artifactId, "onNotification", n);
-          
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+	}
       }
       
       await_time(NOTIFICATION_DELIVERY_DELAY);

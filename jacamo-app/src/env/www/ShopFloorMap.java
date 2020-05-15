@@ -44,9 +44,17 @@ public class ShopFloorMap extends Artifact{
 							SimulationNotificationQueue.getInstance().add(new SimulationNotification("transporter1","item_position",x,y));
 						} else if (jo.has("changeArtifact")) {
 							jo = (JSONObject) jo.get("changeArtifact");
+							String name = jo.getString("name");
+							name = name.substring(0, 1).toUpperCase() + name.substring(1);
+							boolean availability = jo.getBoolean("enabled");
+                                                        SimulationNotificationQueue.getInstance().add(new SimulationNotification("transporter1","change_artifact",name,availability));
 							System.out.println("Received request to change artifact " + jo.getString("name") + " enabled: " + jo.getBoolean("enabled"));
 						} else if (jo.has("changeManual")) {
 							jo = (JSONObject) jo.get("changeManual");
+							String name = jo.getString("name");
+							name = name.substring(0, 1).toUpperCase() + name.substring(1);
+							boolean availability = jo.getBoolean("enabled");
+							SimulationNotificationQueue.getInstance().add(new SimulationNotification("transporter1","change_manual",name,availability));
 							System.out.println("Received request to change manual " + jo.getString("name") + " enabled: " + jo.getBoolean("enabled"));
 						}
 					}
@@ -124,11 +132,15 @@ public class ShopFloorMap extends Artifact{
 			SimulationNotification notif = SimulationNotificationQueue.getInstance().poll();
 
 			if (notif != null) {
-				//if (notif.getAgentId() != null) {
+				String detectionMsg=notif.getObjDetectionMsg();
+				if (detectionMsg == "item_position") {
 
 				//	signal(notif.getAgentId(), notif.getObjDetectionMsg(), notif.getParamX(), notif.getParamY());
-					signal(notif.getObjDetectionMsg(), notif.getParamX(), notif.getParamY());
-				//}
+					signal(detectionMsg, notif.getParamX(), notif.getParamY());
+				}
+				else {
+					signal(detectionMsg, notif.getName(), notif.getAvailability());
+				}
 			} else {
 				await_time(NOTIFICATION_DELAY);
 			}

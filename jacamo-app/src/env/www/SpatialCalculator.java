@@ -6,7 +6,16 @@ import java.lang.Math;
 
 public class SpatialCalculator extends Artifact {
 
-
+	//returns the integer [0-360]->[0-1023]
+	@OPERATION
+	void angularToDigital(int degrees, OpFeedbackParam<Integer> value){
+		double dist = 1023.0/360.0;
+		//1023/360
+		double dig = dist*(360.0-degrees);
+		value.set((int) dig);
+		
+	}
+	
 	//computes the degrees of clock-wise rotation for transfering an axis from the line L{R(xr,yr),P1(0,y)} to the line L{R(xr,yr) and P2(x,y)}
 	@OPERATION
 	void angularDisplacement(int x, int y, int xr, int yr, OpFeedbackParam<Integer> degrees){

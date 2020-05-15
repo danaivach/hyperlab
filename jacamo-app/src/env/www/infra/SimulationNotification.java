@@ -6,6 +6,8 @@ import cartago.AgentId;
 		private AgentId agentId;	
 		private String agentIdStr;
 		private String objDetectionMsg;
+		private String name;
+		private boolean availability;
 		private int paramX;
 		private int paramY;
 		
@@ -23,12 +25,29 @@ import cartago.AgentId;
 			this.paramY = paramY;
 		}
 
+		public SimulationNotification(String agentIdStr, String objDetectionMsg, String name, boolean availability){
+			this.agentIdStr = agentIdStr;
+			this.objDetectionMsg = objDetectionMsg;
+			this.name = name;
+			this.availability = availability;
+		}
+
+		
+
 		public AgentId getAgentId(){
 			return agentId;
 		}
 
 		public String getObjDetectionMsg(){
 			return objDetectionMsg;
+		}
+
+		public String getName(){
+			return name;
+		}
+
+		public boolean getAvailability(){
+			return availability;
 		}
 
 		public int getParamX(){
