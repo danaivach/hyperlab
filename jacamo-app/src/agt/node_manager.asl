@@ -131,7 +131,7 @@
 
 
 +!registerArtifactManual(ArtifactClassOrName, ManualName, ManualUse, ManualDetails) : true <-
-	.print("Found a manual for the artifact ", ArtifactClassOrName , ". Available usage protocols: ", ManualName);
+	.print("Found a manual for the artifact ", ArtifactClassOrName , ": ", ManualName);
 	registerManual(ArtifactClassOrName, ManualName, ManualUse, ManualDetails).
 
 
