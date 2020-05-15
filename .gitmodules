@@ -1,0 +1,12 @@
+[submodule "wot-td-parser"]
+	path = wot-td-parser
+	url = https://github.com/Interactions-HSG/wot-td-parser
+[submodule "yggdrasil"]
+	path = yggdrasil
+	url = https://github.com/Interactions-HSG/yggdrasil.git
+[submodule "wot-search"]
+	path = wot-search
+	url = https://github.com/Interactions-HSG/wot-search
+[submodule "hyperlab_demo_gui"]
+	path = hyperlab_demo_gui
+	url = https://github.com/phil9987/hyperlab_demo_gui.git
