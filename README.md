@@ -1,5 +1,6 @@
 # hyperlab
-A demo scenario for the Web Conference 2020, showcasing a dynamic WoT environment where (partial) plans are missing or need to be assembled by autonomous and human agents.
+We demonstrate how autonomous goal-directed agents can exploit hypermedia to acquire and execute new behaviors at run time. In addition to behaviors programmed into the agents, agents can discover and reuse behaviors extracted from machine-readable resource manuals. The demo scenario showcases a dynamic WoT environment where (partial) plans are missing or need to be assembled by autonomous and human agents. 
+Check out [Long-Lived Agents on the Web: Continuous Acquisition of Behaviors in Hypermedia Environments](https://www.alexandria.unisg.ch/259528/).
 
 # Setup
 * Install gradle
