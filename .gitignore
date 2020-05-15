@@ -1,11 +1,11 @@
-.gradle
-.classpath
-.project
-.settings
-.gradle/
-build/
-bin/
-.DS_Store
+*.gradle
+*.classpath
+*.project
+*.settings
+*.gradle/
+*build/
+*bin/
+*.DS_Store
 # Ignore Gradle GUI config
 gradle-app.setting
 
@@ -13,6 +13,6 @@ gradle-app.setting
 !gradle-wrapper.jar
 
 # Cache of project
-.gradletasknamecache
+*.gradletasknamecache
 
 crawlerdata.ttl
