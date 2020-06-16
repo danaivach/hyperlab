@@ -33,7 +33,7 @@
       td:schemaType td:Object ;
       td:field [
         td:name "token"^^xsd:string ;
-        td:schema [ a ex:UserToken; td:schemaType td:String; td:const "\"opensesame\"" ]
+        td:schema [ a ex:UserToken; td:schemaType td:String; td:const "\"\"" ]
       ] 
      ];
      td:inputSchema [
@@ -51,7 +51,7 @@
       td:schemaType td:Object ;
       td:field [
         td:name "token"^^xsd:string ;
-        td:schema [ a ex:UserToken; td:schemaType td:String; td:const "\"opensesame\"" ]
+        td:schema [ a ex:UserToken; td:schemaType td:String; td:const "\"\"" ]
       ] ;
       td:field [
         td:name "value"^^xsd:string ;
@@ -74,7 +74,7 @@
       td:schemaType td:Object ;
       td:field [
         td:name "token"^^xsd:string ;
-        td:schema [ a ex:UserToken; td:schemaType td:String; td:const "\"opensesame\"" ]
+        td:schema [ a ex:UserToken; td:schemaType td:String; td:const "\"\"" ]
       ] ;
       td:field [
         td:name "value"^^xsd:string ;
@@ -97,7 +97,7 @@
       td:schemaType td:Object ;
       td:field [
         td:name "token"^^xsd:string ;
-        td:schema [ a ex:UserToken ; td:schemaType td:string; td:const "\"opensesame\"" ]
+        td:schema [ a ex:UserToken ; td:schemaType td:string; td:const "\"\"" ]
       ] ;
       td:field [
         td:name "value"^^xsd:string ;
@@ -120,7 +120,7 @@
       td:schemaType td:Object ;
       td:field [
         td:name "token"^^xsd:string ;
-        td:schema [ a ex:UserToken ; td:schemaType td:string; td:const "\"opensesame\"" ]
+        td:schema [ a ex:UserToken ; td:schemaType td:string; td:const "\"\"" ]
       ] ;
       td:field [
         td:name "value"^^xsd:string ;
@@ -143,7 +143,7 @@
       td:schemaType td:Object ;
       td:field [
         td:name "token"^^xsd:string ;
-        td:schema [ a ex:UserToken ; td:schemaType td:String; td:const "\"opensesame\"" ]
+        td:schema [ a ex:UserToken ; td:schemaType td:String; td:const "\"\"" ]
       ] ;
       td:field [
         td:name "value"^^xsd:string ;
@@ -166,7 +166,7 @@
       td:schemaType td:Object ;
       td:field [
         td:name "token"^^xsd:string ;
-        td:schema [ a ex:UserToken ; td:schemaType td:string; td:const "\"opensesame\"" ]
+        td:schema [ a ex:UserToken ; td:schemaType td:string; td:const "\"\"" ]
       ] ;
       td:field [
         td:name "value"^^xsd:string ;
@@ -189,7 +189,7 @@
       td:schemaType td:Object ;
       td:field [
         td:name "token"^^xsd:string ;
-        td:schema [ a ex:UserToken; td:schemaType td:String; td:const "\"opensesame\"" ]
+        td:schema [ a ex:UserToken; td:schemaType td:String; td:const "\"\"" ]
       ] ;
       td:field [
         td:name "value"^^xsd:string ;
@@ -212,7 +212,7 @@
       td:schemaType td:Object ;
       td:field [
         td:name "token"^^xsd:string ;
-        td:schema [ a ex:UserToken ; td:schemaType td:String; td:const "\"opensesame\"" ]
+        td:schema [ a ex:UserToken ; td:schemaType td:String; td:const "\"\"" ]
       ] ;
       td:field [
         td:name "base"^^xsd:string ;
@@ -379,7 +379,7 @@
       td:schemaType td:Object ;
       td:field [
         td:name "token"^^xsd:string ;
-        td:schema [ a ex:UserToken ; td:schemaType td:String; td:const "\"opensesame\"" ]
+        td:schema [ a ex:UserToken ; td:schemaType td:String; td:const "\"\"" ]
       ] ;
       td:field [
         td:name "base"^^xsd:string ;
@@ -432,7 +432,7 @@
       td:schemaType td:Object ;
       td:field [
         td:name "token"^^xsd:string ;
-        td:schema [ a ex:UserToken ; td:schemaType td:String; td:const "\"opensesame\"" ]
+        td:schema [ a ex:UserToken ; td:schemaType td:String; td:const "\"\"" ]
       ]
     ]
    ].
