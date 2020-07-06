@@ -1,6 +1,6 @@
-[submodule "wot-td-parser"]
-	path = wot-td-parser
-	url = https://github.com/Interactions-HSG/wot-td-parser
+[submodule "wot-td-java"]
+	path = wot-td-java
+	url = https://github.com/Interactions-HSG/wot-td-java
 [submodule "yggdrasil"]
 	path = yggdrasil
 	url = https://github.com/Interactions-HSG/yggdrasil.git
