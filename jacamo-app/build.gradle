@@ -31,7 +31,7 @@ repositories {
 
 dependencies {
     compile group: 'org.jacamo', name: 'jacamo', version: '0.8-SNAPSHOT'
-    compile project(':wot-td-parser')
+    compile project(':wot-td-java')
     compile 'org.apache.httpcomponents:httpclient:4.5.5'
     compile 'org.apache.commons:commons-rdf-rdf4j:0.5.0'
     

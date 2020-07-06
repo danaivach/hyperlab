@@ -1,4 +1,4 @@
-include 'jacamo-app', 'wot-td-parser'
+include 'jacamo-app', 'wot-td-java'
 
 rootProject.name = 'hyperlab'
 

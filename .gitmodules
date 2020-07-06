@@ -10,3 +10,9 @@
 [submodule "hyperlab_demo_gui"]
 	path = hyperlab_demo_gui
 	url = https://github.com/phil9987/hyperlab_demo_gui.git
+[submodule "jacamo-app/wot-td-java"]
+	path = jacamo-app/wot-td-java
+	url = https://github.com/Interactions-HSG/wot-td-java.git
+[submodule "wot-td-java"]
+	path = wot-td-java
+	url = https://github.com/Interactions-HSG/wot-td-java.git
