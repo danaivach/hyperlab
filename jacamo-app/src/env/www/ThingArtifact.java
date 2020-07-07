@@ -27,6 +27,7 @@ public class ThingArtifact extends Artifact {
   
   private String artifactIRI;
   private ThingDescription thing;
+  private <Optional>String apiKey;
   
   private Set<String> exposedActions;
   
@@ -45,6 +46,7 @@ public class ThingArtifact extends Artifact {
       e.printStackTrace();
     }
   }
+
   
   @LINK
   void onNotification(Notification notification) {
@@ -59,8 +61,20 @@ public class ThingArtifact extends Artifact {
   }
   
   @OPERATION
+  void setAPIKey(String token) {
+    if (token != null && !token.isEmpty()) {
+      this.apiKey = Optional.of(token);
+    }
+  }
+  
+  @OPERATION
   void act(String actionTypeIRI, Object[] params) {
     TDHttpClient client = new TDHttpClient(thing);
+    if (apikey.isPresent()){
+      Header auth = new BasicHeader("X-API-Key",apiKey.get());
+      
+    }
+    
     
     Map<IRI, Object> paramMap = buildParamMap(params);
     
